@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <import th:include="admin/include/head" th:remove="tag"/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+    <import th:include="admin/include/layout" th:remove="tag"/>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <!--<import th:include="admin/include/title" th:remove="tag"/>-->
+
+        <!-- Main content -->
+        <section class="content ">
+            <div class="box ">
+                <div class="box-header with-border ">
+                    <h3 class="box-title">订单信息</h3>
+                </div>
+                <div class="box-body">
+                    <table class="table table-condensed table-hover" id="order_info_list">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>订单编码</th>
+                            <th>购买账号</th>
+                            <th>商品名称</th>
+                            <th>颜色</th>
+                            <th>尺码</th>
+                            <th>商品数量</th>
+                            <th>商品单价</th>
+                            <th>店铺名称</th>
+                            <th>状态</th>
+                            <th>下单时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <import th:include="admin/include/copyright" th:remove="tag"/>
+</div>
+<!-- ./wrapper -->
+<import th:include="admin/goodsorderinfo/form" th:remove="tag"/>
+<import th:include="admin/include/footer" th:remove="tag"/>
+<script th:inline="javascript">
+    var accessCreate = [[${user.hasAccessModuleAction('goodsorderinfo', 'C')}]];
+    var accessUpdate = [[${user.hasAccessModuleAction('goodsorderinfo', 'U')}]];
+    var accessDelete = [[${user.hasAccessModuleAction('goodsorderinfo', 'D')}]];
+</script>
+<script th:src="@{/js/admin/goodsorderinfo/goodsorderinfo.js}"></script>
+</body>
+</html>

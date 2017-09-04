@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.VideoUserMapper">
+    <resultMap id="VideoUserResultMap" type="com.zxwl.web.bean.VideoUser">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="goodsId" column="goods_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="shopId" column="shop_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="videoId" column="video_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'VideoUserResultMap'"/>
+        <bind name="tableName" value="'t_video_user'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+
+    <select id="selectByPk" parameterType="string" resultMap="VideoUserResultMap">
+        select * from t_video_user where u_id=#{id}
+    </select>
+    <select id="userVideoListInfo"  parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
+        SELECT t3.video_id, t3.goods_id, t3.like_num, t3.usermd5, t3.shop_name, t3.address, t3.dividend, t3.videomd5, t3.videoimglist, IFNULL((tvur.user_id),0)AS  isUpvote FROM
+
+        (SELECT t1.u_id AS video_id,  t1.goods_id, IFNULL(t1.like_num, 0) AS like_num, t1.usermd5, t1.shop_name, t1.address, IFNULL( t1.dividend, 0) AS dividend, t1.videomd5, t2.videoimglist FROM
+
+        (SELECT
+        tv.u_id , tvu.goods_id , tv.like_num, sr.path AS userImgUrl, sr.md5 AS usermd5, ts.shop_name,
+        ts.address, tgb.dividend, srv.path AS videopath,  srv.md5 AS videomd5
+        FROM  t_video tv
+        LEFT JOIN t_video_user tvu ON tvu.video_id= tv.u_id AND tv.`status`=3
+        LEFT JOIN t_user_info tui ON tvu.user_id= tui.user_id
+        LEFT JOIN t_metadata_rel tmr  ON tmr.record_id=tui.avatar_id
+        LEFT JOIN  s_resources sr ON tmr.data_id= sr.u_id
+        LEFT JOIN t_metadata_rel tmrv  ON tmrv.record_id=tv.video_url AND   tmrv.type = 1
+        LEFT JOIN  s_resources srv ON tmrv.data_id= srv.u_id
+        LEFT JOIN   t_shop ts ON  ts.u_id = tvu.shop_id
+        LEFT JOIN  t_goods_percentage tgp ON  tgp.goods_id = tvu.goods_id
+        LEFT JOIN t_goods_brokerage tgb ON tgp.u_id= tgb.percentage_id) t1,
+
+        ( SELECT GROUP_CONCAT(t.md5)  AS videoimglist, t.video_id FROM
+
+        ( SELECT sr.md5, tv.u_id AS video_id  FROM  t_video tv
+        LEFT JOIN  t_metadata_rel tmr ON tv.video_url=tmr.record_id
+        LEFT JOIN  s_resources sr   ON tmr.data_id=sr.u_id AND tmr.data_type=4 ) t GROUP BY t.video_id) t2
+        WHERE t1.u_id=t2.video_id) t3
+        LEFT JOIN t_video_upvote_record tvur ON tvur.video_id=t3.video_id AND tvur.user_id=#{userId} LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalUserVideoListInfo"   resultType="int">
+        SELECT  COUNT(u_id) FROM  t_video where  status = 3
+    </select>
+    <select id="goodsVideoList"  parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
+        <!--根据商品ID分页查询当前商品的所有试衣视频-->
+        SELECT t3.NAME, t6.userurl AS userimgurl,t3.upload_time AS post_time , t3.videourl, t4.videoimglist, t3.u_id AS videoId  FROM
+
+        (SELECT tui.NAME, tui.avatar_id, t1.upload_time, sr.md5 AS videourl,t1.u_id FROM
+
+        (SELECT  tv.u_id, tv.video_url, tvu.user_id, tv.upload_time  FROM   t_video_user tvu, t_video tv
+        WHERE  tvu.video_id=tv.u_id AND  tvu.goods_id=#{userId} AND tv.`status` =3) t1
+        LEFT JOIN t_user_info tui ON tui.user_id= t1.user_id
+        LEFT JOIN t_metadata_rel tmr ON tmr.record_id=t1.video_url AND tmr.type=1
+        LEFT JOIN s_resources sr ON tmr.data_id= sr.u_id) t3,
+
+        (SELECT  GROUP_CONCAT(sr.md5) AS videoimglist,  tmr.record_id, t2.u_id AS video_id FROM
+        (SELECT  tv.u_id, tv.video_url, tvu.user_id, tv.upload_time  FROM   t_video_user tvu, t_video tv
+        WHERE  tvu.video_id=tv.u_id AND  tvu.goods_id=#{userId} AND tv.`status` =3) t2
+        LEFT JOIN t_metadata_rel tmr ON tmr.record_id=t2.video_url AND tmr.data_type=4
+        LEFT JOIN s_resources sr ON tmr.data_id= sr.u_id GROUP BY tmr.record_id) t4,
+
+        (SELECT sr.md5 AS userurl, t5.u_id FROM
+        (SELECT  tv.u_id, tv.video_url, tvu.user_id, tv.upload_time  FROM   t_video_user tvu, t_video tv
+        WHERE  tvu.video_id=tv.u_id AND  tvu.goods_id=#{userId} AND tv.`status` =3) t5
+        LEFT JOIN t_user_info tui ON tui.user_id = t5.user_id
+        LEFT JOIN t_metadata_rel tmr ON tmr.record_id= tui.avatar_id AND tmr.type=0
+        LEFT JOIN s_resources sr ON sr.u_id=tmr.data_id)  t6
+        WHERE t3.u_id=t4.video_id AND t3.u_id=t6.u_id LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalgoodsVideoList"   resultType="int">
+        SELECT COUNT( tv.u_id)  AS videosum FROM   t_video_user tvu, t_video tv
+        WHERE  tvu.video_id=tv.u_id AND tv.status =3 AND  tvu.goods_id=#{goodsId}
+    </select>
+    <select id="userALLVideoList"  parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
+        SELECT t2.shop_name, t2.`status`, t2.video_id, t2.goods_id,  t2.trydate, t2.gmt_create, t3.videourl, t5.videoimglist  FROM
+
+        (SELECT shop_name, t.video_id, t.goods_id, t.trydate,  t.gmt_create, t.`status` FROM t_shop ts,
+        (SELECT tvu.video_id , tv.`status`, tvu.shop_id,tvu.goods_id,  tvu.gmt_create, DATE_FORMAT(tvu.gmt_create,'%Y-%m-%d')  AS trydate
+        FROM t_video_user tvu , t_video tv   WHERE tv.u_id =tvu.video_id  AND  tv.`status` != 99 AND tvu.user_id=#{userId}  GROUP BY trydate,tvu.video_id ORDER BY trydate DESC) t
+        WHERE ts.u_id=t.shop_id) t2,
+
+        (SELECT sr.md5 AS videourl,   t1.video_id FROM
+
+        (SELECT tvu.video_id, tv.video_url, DATE_FORMAT(tvu.gmt_create,'%Y-%m-%d')  AS trydate
+        FROM t_video_user tvu , t_video tv   WHERE tv.u_id =tvu.video_id  AND  tv.`status` != 99 AND tvu.user_id=#{userId}  GROUP BY trydate,tvu.video_id ORDER BY trydate DESC) t1
+        LEFT JOIN t_metadata_rel tmr ON t1.video_url=tmr.record_id AND tmr.type=1
+        LEFT JOIN  s_resources sr ON tmr.data_id=sr.u_id) t3,
+
+        (SELECT  GROUP_CONCAT(sr.md5) AS videoimglist,   t4.video_id FROM
+
+        (SELECT tvu.video_id, tv.video_url, DATE_FORMAT(tvu.gmt_create,'%Y-%m-%d')  AS trydate
+        FROM t_video_user tvu , t_video tv   WHERE tv.u_id =tvu.video_id  AND  tv.`status` != 99 AND tvu.user_id=#{userId}  GROUP BY trydate,tvu.video_id ORDER BY trydate DESC) t4
+        LEFT JOIN t_metadata_rel tmr ON t4.video_url=tmr.record_id AND tmr.data_type=4
+        LEFT JOIN  s_resources sr ON tmr.data_id=sr.u_id GROUP BY t4.video_id) t5
+
+        WHERE t2.video_id= t3.video_id AND t5.video_id=t2.video_id ORDER BY t2.trydate  DESC LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalUserVideoList"   resultType="int">
+        SELECT  COUNT(tv.u_id) AS uservideocount FROM t_video_user tvu, t_video tv   WHERE tv.u_id =tvu.video_id  AND  tv.status != 99 AND tvu.user_id=#{userId}
+    </select>
+
+
+    <select id="userCharacteristicsSearchVideo"  parameterType="com.zxwl.web.bean.api.PagerParamVideoByUserCharacteristics" resultType="java.util.HashMap">
+        SELECT t5.video_id, t5.goods_id, t5.like_num,t5.usermd5, t5.shop_name, t5.address, t5.dividend, t5.videomd5,t5.videoimglist, IFNULL((tvur.user_id),0)AS  isUpvote FROM
+        ( SELECT   t4.u_id AS video_id, t4.goods_id,  t4.like_num, t4.usermd5, t4.shop_name, t4.address, t4.dividend,  t4.videomd5, t4.videoimglist  FROM
+        (  SELECT tv.u_id FROM t_user_info tui, t_video_user tvu, t_video tv
+        WHERE 1=1 AND  tui.user_id= tvu.user_id AND tv.u_id=tvu.video_id AND tv.`status`=3
+
+        <if test="minAge != null and minAge != '' and minAge >= 0">
+            AND ( tui.age BETWEEN #{minAge} AND #{maxAge} )
+        </if>
+        <if test="minHeight != null and minHeight != '' and minHeight >= 0">
+            AND (tui.height  BETWEEN  #{minHeight} AND #{maxHeight} )
+        </if>
+        <if test="minWeight != null and minWeight != '' and minWeight >= 0">
+            AND (tui.weight  BETWEEN  #{minWeight} AND #{maxWeight} )
+        </if>
+        <if test="sex != null and sex != '' and sex >= 0">
+            AND tui.sex=#{sex}
+        </if>
+        ) t3
+        LEFT JOIN (SELECT t1.u_id,  t1.goods_id, IFNULL(t1.like_num, 0) AS like_num, t1.usermd5, t1.shop_name, t1.address, IFNULL( t1.dividend, 0) AS dividend, t1.videomd5, t2.videoimglist FROM
+
+        (SELECT tv.u_id, tv.video_url, tvu.goods_id , tv.like_num, sr.path AS userImgUrl, sr.md5 AS usermd5, ts.shop_name,
+        ts.address, tgb.dividend, srv.path AS videopath,  srv.md5 AS videomd5
+        FROM  t_video tv
+        LEFT JOIN t_video_user tvu ON tvu.video_id= tv.u_id
+        LEFT JOIN t_user_info tui ON tvu.user_id= tui.user_id
+        LEFT JOIN t_metadata_rel tmr  ON tmr.record_id=tui.avatar_id
+        LEFT JOIN  s_resources sr ON tmr.data_id= sr.u_id
+        LEFT JOIN t_metadata_rel tmrv  ON tmrv.record_id=tv.video_url AND   tmrv.type = 1
+        LEFT JOIN  s_resources srv ON tmrv.data_id= srv.u_id
+        LEFT JOIN   t_shop ts ON  ts.u_id = tvu.shop_id
+        LEFT JOIN  t_goods_percentage tgp ON  tgp.goods_id = tvu.goods_id
+        LEFT JOIN t_goods_brokerage tgb ON tgp.u_id= tgb.percentage_id) t1,
+
+        ( SELECT GROUP_CONCAT(t.md5)  AS videoimglist, t.u_id FROM
+
+        ( SELECT sr.md5, tv.u_id  FROM t_video tv
+        LEFT JOIN  t_metadata_rel tmr ON tv.video_url=tmr.record_id
+        LEFT JOIN  s_resources sr   ON tmr.data_id=sr.u_id AND tmr.data_type=4 ) t GROUP BY t.u_id) t2
+
+        WHERE t1.u_id=t2.u_id) t4  ON t3.u_id=t4.u_id) t5
+
+        LEFT JOIN t_video_upvote_record tvur ON tvur.video_id=t5.video_id AND tvur.user_id=#{userId}
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalUserCharacteristicsSearchVideo"  parameterType="com.zxwl.web.bean.api.PagerParamVideoByUserCharacteristics"  resultType="int">
+       SELECT COUNT(tv.u_id) FROM t_user_info tui, t_video_user tvu, t_video tv
+        WHERE 1=1 AND  tui.user_id= tvu.user_id AND tv.u_id=tvu.video_id AND tv.status=3
+        <if test="minAge != null and minAge != '' and minAge >= 0">
+            AND ( tui.age BETWEEN #{minAge} AND #{maxAge} )
+        </if>
+        <if test="minHeight != null and minHeight != '' and minHeight >= 0">
+            AND (tui.height  BETWEEN  #{minHeight} AND #{maxHeight} )
+        </if>
+        <if test="minWeight != null and minWeight != '' and minWeight >= 0">
+            AND (tui.weight  BETWEEN  #{minWeight} AND #{maxWeight} )
+        </if>
+        <if test="sex != null and sex != '' and sex >= 0">
+            AND tui.sex=#{sex}
+        </if>
+    </select>
+
+
+    <select id="goodsSpcSearchVideo"  parameterType="com.zxwl.web.bean.api.PagerParamVideoByGoodsSpc" resultType="java.util.HashMap">
+        SELECT t5.video_id, t5.goods_id, t5.like_num,t5.usermd5, t5.shop_name, t5.address, t5.dividend, t5.videomd5,t5.videoimglist, IFNULL((tvur.user_id),0)AS  isUpvote FROM
+        ( SELECT t4.u_id AS video_id, t4.goods_id,  t4.like_num, t4.usermd5, t4.shop_name, t4.address, t4.dividend,  t4.videomd5, t4.videoimglist FROM
+        (SELECT tv.u_id AS videoid  ,tgc.class_name  FROM t_video_goods tvg , t_goods_info_spec tgis, t_video tv,t_goods_info tgi, t_goods_class tgc
+        WHERE   tgis.u_id=tvg.goodsspec_id AND tv.u_id=tvg.video_id AND tgi.u_id=tgis.goods_id AND tgi.class_code=tgc.class_code AND tv.`status`=3
+        <if test="size != null and size != ''">
+            AND tgis.size=#{size}
+        </if>
+        <if test="class_code != null and class_code != ''">
+            AND tgc.class_code=#{class_code}
+        </if>
+        <if test="color != null and color != ''">
+            AND tgis.color=#{color}
+        </if>
+        ) t3
+        LEFT JOIN (SELECT t1.u_id,  t1.goods_id, IFNULL(t1.like_num, 0) AS like_num, t1.usermd5, t1.shop_name, t1.address, IFNULL( t1.dividend, 0) AS dividend, t1.videomd5, t2.videoimglist FROM
+
+        (SELECT
+        tv.u_id, tvu.goods_id , tv.like_num, sr.path AS userImgUrl, sr.md5 AS usermd5, ts.shop_name,
+        ts.address, tgb.dividend, srv.path AS videopath,  srv.md5 AS videomd5
+        FROM  t_video tv
+        LEFT JOIN t_video_user tvu ON tvu.video_id= tv.u_id
+        LEFT JOIN t_user_info tui ON tvu.user_id= tui.user_id
+        LEFT JOIN t_metadata_rel tmr  ON tmr.record_id=tui.avatar_id
+        LEFT JOIN  s_resources sr ON tmr.data_id= sr.u_id
+        LEFT JOIN t_metadata_rel tmrv  ON tmrv.record_id=tv.video_url AND   tmrv.type = 1
+        LEFT JOIN  s_resources srv ON tmrv.data_id= srv.u_id
+        LEFT JOIN   t_shop ts ON  ts.u_id = tvu.shop_id
+        LEFT JOIN  t_goods_percentage tgp ON  tgp.goods_id = tvu.goods_id
+        LEFT JOIN t_goods_brokerage tgb ON tgp.u_id= tgb.percentage_id) t1
+        LEFT JOIN
+        ( SELECT GROUP_CONCAT(t.md5)  AS videoimglist, t.u_id FROM
+        ( SELECT sr.md5, tv.u_id  FROM t_video tv
+        LEFT JOIN  t_metadata_rel tmr ON tv.video_url=tmr.record_id
+        LEFT JOIN  s_resources sr   ON tmr.data_id=sr.u_id AND tmr.data_type=4 ) t GROUP BY t.u_id) t2
+
+        ON t1.u_id=t2.u_id) t4  ON t3.videoid=t4.u_id) t5
+        LEFT JOIN t_video_upvote_record tvur ON tvur.video_id=t5.video_id AND tvur.user_id=#{userId} LIMIT #{pageIndex}, #{pageSize}
+
+    </select>
+
+    <select id="totalGoodsSpcSearchVideo"  parameterType="com.zxwl.web.bean.api.PagerParamVideoByGoodsSpc"  resultType="int">
+        SELECT COUNT(tv.u_id) AS videoid  ,tgc.class_name  FROM t_video_goods tvg , t_goods_info_spec tgis, t_video tv,t_goods_info tgi, t_goods_class tgc
+        WHERE   tgis.u_id=tvg.goodsspec_id AND tv.u_id=tvg.video_id AND tgi.u_id=tgis.goods_id AND tgi.class_code=tgc.class_code AND tv.`status`=3
+
+        <if test="size != null and size != ''">
+            AND tgis.size=#{size}
+        </if>
+        <if test="class_code != null and class_code != ''">
+            AND tgc.class_code=#{class_code}
+        </if>
+        <if test="color != null and color != ''">
+            AND tgis.color=#{color}
+        </if>
+    </select>
+
+     <!--他人个人公开的所有视频-->
+    <select id="otherALLVideoList"  parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
+        SELECT t2.shop_name, t2.video_id, t2.goods_id,  t2.trydate, t2.gmt_create, t3.videourl, t5.videoimglist  FROM
+        (SELECT shop_name, t.video_id, t.goods_id, t.trydate,  t.gmt_create FROM t_shop ts,
+        ( SELECT tvu.video_id ,tvu.shop_id,tvu.goods_id,  tvu.gmt_create, DATE_FORMAT(tvu.gmt_create,'%Y-%m-%d')  AS trydate
+        FROM t_video_user tvu, t_video tv
+        WHERE  tvu.user_id=#{userId} AND tvu.video_id=tv.u_id AND tv.`status`=3
+        GROUP BY trydate,tvu.video_id ORDER BY trydate DESC ) t
+        WHERE ts.u_id=t.shop_id) t2,
+        (SELECT sr.md5 AS videourl,   t1.video_id FROM
+        (SELECT tvu.video_id, tv.video_url, DATE_FORMAT(tvu.gmt_create,'%Y-%m-%d')  AS trydate
+        FROM t_video_user tvu , t_video tv
+        WHERE  tvu.user_id=#{userId} AND tvu.video_id=tv.u_id AND tv.`status`=3  GROUP BY trydate,tvu.video_id ORDER BY trydate DESC) t1
+        LEFT JOIN t_metadata_rel tmr ON t1.video_url=tmr.record_id AND tmr.type=1
+        LEFT JOIN  s_resources sr ON tmr.data_id=sr.u_id) t3,
+        (SELECT  GROUP_CONCAT(sr.md5) AS videoimglist,   t4.video_id FROM
+        (SELECT tvu.video_id, tv.video_url, DATE_FORMAT(tvu.gmt_create,'%Y-%m-%d')  AS trydate
+        FROM t_video_user tvu , t_video tv
+        WHERE  tvu.user_id=#{userId} AND tvu.video_id=tv.u_id AND tv.`status`=3   GROUP BY trydate,tvu.video_id ORDER BY trydate DESC) t4
+        LEFT JOIN t_metadata_rel tmr ON t4.video_url=tmr.record_id AND tmr.data_type=4
+        LEFT JOIN  s_resources sr ON tmr.data_id=sr.u_id GROUP BY t4.video_id) t5
+        WHERE t2.video_id= t3.video_id AND t5.video_id=t2.video_id ORDER BY t2.trydate  DESC LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalOtherVideoList"   resultType="int">
+        SELECT
+        COUNT(tv.u_id) AS uservideocount
+        FROM
+        t_video_user tvu ,
+        t_video tv
+        WHERE
+        tv.u_id = tvu.video_id
+        AND tv.`status` = 3
+        AND tvu.user_id =#{userId}
+    </select>
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="VideoUserResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

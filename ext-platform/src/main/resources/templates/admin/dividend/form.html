@@ -1,0 +1,55 @@
+<div class="modal fade" id="modal-add">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">新增</h4>
+            </div>
+            <form class="form-horizontal" name="add_form" id="dividend_form" method="post">
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="goods_code" class="col-sm-2 control-label">服装编码:</label>
+                            <div class="col-sm-4">
+                                <select name="goods_code" class="form-control selectpicker" data-live-search="true" id="goods_code"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="goods_name" class="col-sm-2 control-label">商品名称:</label>
+                            <div class="col-sm-4">
+                                <input name="goods_name" class="form-control" id="goods_name" readonly="readonly"/>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="shop_name" class="col-sm-2 control-label">店铺名称:</label>
+                            <div class="col-sm-4">
+                                <input name="shop_name" class="form-control" id="shop_name" readonly="readonly"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="percentage" class="col-sm-2 control-label">分佣比例:</label>
+                            <div class="col-sm-2">
+                                <input type="text" class="form-control" name="percentage" id="percentage" value=""/>
+                            </div>
+                            <label for="percentage" class="col-sm-1 control-label">%</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal add -->

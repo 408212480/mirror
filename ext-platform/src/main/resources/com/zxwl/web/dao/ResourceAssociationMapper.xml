@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.ResourceAssociationMapper">
+    <resultMap id="ResourceAssociationResultMap" type="com.zxwl.web.bean.ResourceAssociation">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="dataId" column="data_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="recordId" column="record_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="dataType" column="data_type" javaType="int" jdbcType="TINYINT"/>
+            <result property="type" column="type" javaType="int" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'ResourceAssociationResultMap'"/>
+        <bind name="tableName" value="'t_metadata_rel'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+    <select id="getGoodsImgs" parameterType="string" resultType="String">
+        SELECT carousel_img_url FROM t_goods_info WHERE u_id=#{goodsId}
+    </select>
+    <select id="selectByPk" parameterType="string" resultMap="ResourceAssociationResultMap">
+        select * from t_metadata_rel where u_id=#{id}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="ResourceAssociationResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

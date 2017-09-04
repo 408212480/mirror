@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.videoMapper">
+    <resultMap id="videoResultMap" type="com.zxwl.web.bean.video">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="videoUrl" column="video_url" javaType="String" jdbcType="VARCHAR"/>
+        <result property="height" column="height" javaType="Integer" jdbcType="INTEGER"/>
+        <result property="gender" column="gender" javaType="Integer" jdbcType="INTEGER"/>
+        <result property="age" column="age" javaType="Integer" jdbcType="INTEGER"/>
+        <result property="phiz" column="phiz" javaType="String" jdbcType="VARCHAR"/>
+        <result property="videoLength" column="video_length" javaType="Long" jdbcType="INTEGER"/>
+        <result property="status" column="status" javaType="int" jdbcType="INTEGER"/>
+        <result property="likeNum" column="like_num" javaType="int" jdbcType="INTEGER"/>
+        <result property="uploadTime" column="upload_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="deviceId" column="device_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="deviceOwnerId" column="device_owner_id" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'videoResultMap'"/>
+        <bind name="tableName" value="'t_video'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="videoResultMap">
+        select * from t_video where u_id=#{id}
+    </select>
+
+    <select id="getVideoUpvoteByVideoId" parameterType="string" resultMap="videoResultMap">
+        select like_num from t_video where u_id=#{videoId}
+    </select>
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="videoResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+    <select id="getAllLike" parameterType="string" resultType="int">
+        SELECT IFNULL(SUM(tv.like_num), 0) AS allsum  FROM t_video tv,  t_video_user tvu WHERE tv.u_id=tvu.video_id AND  tvu.user_id=#{id}
+    </select>
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+    <select id="selectVideoImgByVideoId" parameterType="string" resultType="java.util.HashMap">
+        SELECT
+        sr.md5
+        FROM
+        s_resources sr,
+        t_video tv,
+        t_metadata_rel tmr
+        WHERE
+        tv.u_id = tmr.record_id
+        AND tmr.data_id = sr.u_id
+        AND tmr.data_type = 4
+        AND tv.u_id = #{videoId}
+    </select>
+    <select id="List" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="videoResultMap">
+        SELECT
+        tv.device_id,
+        tv.u_id,
+        tv.status,
+        tv.upload_time,
+        tv.like_num,
+        td.`code`,
+        su.username,
+        sr.md5,
+        sr.`name`,
+        tfg.fid_id
+        FROM
+        t_video tv
+        JOIN t_video_post tvp ON tv.u_id = tvp.video_id
+        JOIN t_deivce td ON td.u_id = tv.device_id
+        JOIN s_user su ON su.u_id = tvp.user_id
+        JOIN s_resources sr ON sr.u_id=(
+        SELECT
+        t_metadata_rel.data_id
+        FROM
+        t_metadata_rel
+        WHERE
+        t_metadata_rel.record_id = tv.video_url
+        AND t_metadata_rel.type = 1
+        )
+        JOIN t_fid_goodsspec tfg ON tfg.spec_id = (
+        SELECT
+        t_video_goods.goodsspec_id
+        FROM
+        t_video_goods
+        WHERE
+        t_video_goods.video_id = tv.u_id
+        )
+    </select>
+    <select id="ListPager" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="videoResultMap">
+        SELECT
+        tv.device_id,
+        tv.u_id,
+        tv.status,
+        tv.upload_time,
+        tv.like_num,
+        td.`code`,
+        su.username,
+        sr.md5,
+        sr.`name`,
+        tfg.fid_id
+        FROM
+        t_video tv
+        JOIN t_video_post tvp ON tv.u_id = tvp.video_id
+        JOIN t_deivce td ON td.u_id = tv.device_id
+        JOIN s_user su ON su.u_id = tvp.user_id
+        JOIN s_resources sr ON sr.u_id=(
+        SELECT
+        t_metadata_rel.data_id
+        FROM
+        t_metadata_rel
+        WHERE
+        t_metadata_rel.record_id = tv.video_url
+        AND t_metadata_rel.type = 1
+        )
+        JOIN t_fid_goodsspec tfg ON tfg.spec_id = (
+        SELECT
+        t_video_goods.goodsspec_id
+        FROM
+        t_video_goods
+        WHERE
+        t_video_goods.video_id = tv.u_id
+        )
+        limit #{pageIndex},#{pageSize}
+    </select>
+
+    <select id="getVideoByVideoId" parameterType="string" resultMap="videoResultMap">
+        SELECT
+        tv.device_id,
+        tv.u_id,
+        tv.upload_time,
+        tv.like_num,
+        td.`code`,
+        su.username,
+        sr.md5,
+        sr.`name`,
+        tfg.fid_id
+        FROM
+        t_video tv
+        JOIN t_video_post tvp ON tv.u_id = tvp.video_id
+        JOIN t_deivce td ON td.u_id = tv.device_id
+        JOIN s_user su ON su.u_id = tvp.user_id
+        JOIN s_resources sr ON sr.u_id=(
+        SELECT
+        t_metadata_rel.data_id
+        FROM
+        t_metadata_rel
+        WHERE
+        t_metadata_rel.record_id = tv.u_id
+        AND t_metadata_rel.type = 1
+        )
+        JOIN t_fid_goodsspec tfg ON tfg.spec_id = (
+        SELECT
+        t_video_goods.goodsspec_id
+        FROM
+        t_video_goods
+        WHERE
+        t_video_goods.video_id = tv.u_id
+        ) WHERE tv.u_id = #{videoId}
+    </select>
+
+    <select id="getRecognitionVideoPager" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="java.util.HashMap">
+        SELECT
+        t_video.u_id AS videoId,
+        t_metadata_rel.data_id AS videoUrl,
+        t.data_id AS videoImg,
+        t_video.upload_time AS uploadTime,
+        t_shop.address AS shopAddress,
+        t_shop.shop_name AS shopName
+        FROM
+        t_video
+        LEFT JOIN t_shop_device ON t_shop_device.device_id = t_video.device_id
+        LEFT JOIN t_shop ON t_shop.u_id = t_shop_device.shop_id
+        LEFT JOIN t_metadata_rel ON t_metadata_rel.record_id = t_video.video_url
+        AND t_metadata_rel.type = 1
+        LEFT JOIN (
+        SELECT
+        t_metadata_rel.record_id AS record_id,
+        t_metadata_rel.data_id AS data_id
+        FROM
+        t_metadata_rel
+        JOIN t_video ON t_metadata_rel.record_id = t_video.video_url
+        AND t_metadata_rel.data_type = 4
+        AND t_metadata_rel.type = 0
+        ) AS t ON t.record_id = t_video.video_url
+        GROUP BY
+        videoId
+        LIMIT #{pageIndex},#{pageSize}
+    </select>
+
+    <select id="getRecognitionVideo" resultType="java.util.HashMap">
+        SELECT
+        t_video.u_id AS videoId,
+        t_metadata_rel.data_id AS videoUrl,
+        t.data_id AS videoImg,
+        t_video.upload_time AS uploadTime,
+        t_shop.address AS shopAddress,
+        t_shop.shop_name AS shopName
+        FROM
+        t_video
+        LEFT JOIN t_shop_device ON t_shop_device.device_id = t_video.device_id
+        LEFT JOIN t_shop ON t_shop.u_id = t_shop_device.shop_id
+        LEFT JOIN t_metadata_rel ON t_metadata_rel.record_id = t_video.video_url
+        AND t_metadata_rel.type = 1
+        LEFT JOIN (
+        SELECT
+        t_metadata_rel.record_id AS record_id,
+        t_metadata_rel.data_id AS data_id
+        FROM
+        t_metadata_rel
+        JOIN t_video ON t_metadata_rel.record_id = t_video.video_url
+        AND t_metadata_rel.data_type = 4
+        AND t_metadata_rel.type = 0
+        ) AS t ON t.record_id = t_video.video_url
+        GROUP BY
+        videoId
+    </select>
+
+    <select id="getVideoByUploadTimePager" resultType="java.util.HashMap">
+        SELECT
+        t_video.u_id AS videoId,
+        t_metadata_rel.data_id AS videoUrl,
+        t.data_id AS videoImg,
+        t_video.upload_time AS uploadTime,
+        t_shop.address AS shopAddress,
+        t_shop.shop_name AS shopName
+        FROM
+        t_video
+        JOIN t_video_user ON t_video.u_id = t_video_user.video_id
+        JOIN t_shop ON t_shop.u_id = t_video_user.shop_id
+        JOIN t_metadata_rel ON t_metadata_rel.record_id = t_video.video_url
+        AND t_metadata_rel.type = 1
+        JOIN (
+        SELECT
+        t_metadata_rel.record_id AS record_id,
+        t_metadata_rel.data_id AS data_id
+        FROM
+        t_video,
+        t_metadata_rel
+        WHERE
+        t_video.video_url = t_metadata_rel.record_id
+        AND t_metadata_rel.data_type = 4
+        AND t_metadata_rel.type = 0
+        ) AS t ON t.record_id = t_video.video_url
+        WHERE
+        t_video_user.user_id = #{userId}
+        AND UNIX_TIMESTAMP(t_video.upload_time) BETWEEN UNIX_TIMESTAMP(#{start})
+        AND  UNIX_TIMESTAMP(#{end})
+        GROUP BY
+        videoId
+        ORDER BY t_video.upload_time ASC
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+
+    <select id="getVideoByUploadTime" resultType="java.util.HashMap">
+        SELECT
+        t_video.u_id AS videoId,
+        t_metadata_rel.data_id AS videoUrl,
+        t.data_id AS videoImg,
+        t_video.upload_time AS uploadTime,
+        t_shop.address AS shopAddress,
+        t_shop.shop_name AS shopName
+        FROM
+        t_video
+        JOIN t_video_user ON t_video.u_id = t_video_user.video_id
+        JOIN t_shop ON t_shop.u_id = t_video_user.shop_id
+        JOIN t_metadata_rel ON t_metadata_rel.record_id = t_video.video_url
+        AND t_metadata_rel.type = 1
+        JOIN (
+        SELECT
+        t_metadata_rel.record_id AS record_id,
+        t_metadata_rel.data_id AS data_id
+        FROM
+        t_video,
+        t_metadata_rel
+        WHERE
+        t_video.video_url = t_metadata_rel.record_id
+        AND t_metadata_rel.data_type = 4
+        AND t_metadata_rel.type = 0
+        ) AS t ON t.record_id = t_video.video_url
+        WHERE
+        t_video_user.user_id = #{userId}
+        AND UNIX_TIMESTAMP(t_video.upload_time) BETWEEN UNIX_TIMESTAMP(#{start})
+        AND  UNIX_TIMESTAMP(#{end})
+        GROUP BY
+        videoId
+    </select>
+
+    <update id="updateStatus" >
+        update t_video
+        <trim prefix="set" suffixOverrides=",">
+            <if test="status!=null">status=#{status},</if>
+        </trim>
+        where
+        u_id=#{videoId}
+    </update>
+    <update id="updateVideoUpvoteNum">
+        update t_video
+        <trim prefix="set" suffixOverrides=",">
+            <if test="likeNum!=null">like_num=#{likeNum},</if>
+        </trim>
+        where
+        u_id=#{videoId}
+    </update>
+</mapper>

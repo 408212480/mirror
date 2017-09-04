@@ -1,0 +1,42 @@
+<div class="modal fade" id="modal-send">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content message_align">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+                <h4 class="title">发货确认</h4>
+            </div>
+            <form name="send_form" id="send_form"  method="post">
+                <div class="modal-body">
+                    <p class="text-center">确定立即发货？</p>
+                    <p>输入快递信息(非必填)</p>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label for="orderExpressCompany" class="control-label">快递公司:</label>
+                                <input type="text" class="form-control" name="orderExpressCompany" id="orderExpressCompany"
+                                       value=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label for="orderExpressNo" class="control-label">快递单号:</label>
+                                <input type="text" class="form-control" name="orderExpressNo"
+                                       id="orderExpressNo" value=""/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="url"/>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success btn-del-sure">确定</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+

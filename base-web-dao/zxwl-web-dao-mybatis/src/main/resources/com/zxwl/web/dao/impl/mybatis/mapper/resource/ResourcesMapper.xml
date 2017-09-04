@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zxwl.web.dao.resource.ResourcesMapper">
+    <resultMap id="ResourcesResultMap" type="com.zxwl.web.bean.po.resource.Resources" >
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR" />
+        <result property="name" column="name" javaType="String" jdbcType="VARCHAR" />
+        <result property="path" column="path" javaType="String" jdbcType="VARCHAR" />
+        <result property="creatorId" column="creator_id" javaType="String" jdbcType="VARCHAR" />
+        <result property="md5" column="md5" javaType="String" jdbcType="VARCHAR" />
+        <result property="type" column="type" javaType="String" jdbcType="VARCHAR" />
+        <result property="size" column="size" javaType="long" jdbcType="NUMERIC" />
+        <result property="status" column="status" javaType="int" jdbcType="INTEGER" />
+        <result property="createDate" column="create_date" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'ResourcesResultMap'"/>
+        <bind name="tableName" value="'s_resources'"/>
+    </sql>
+
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <delete id="deleteByMd5" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        delete from s_resources where md5=#{md5}
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+    <select id="selectByPk" parameterType="string" resultMap="ResourcesResultMap">
+        select * from s_resources WHERE u_id=#{id}
+    </select>
+
+    <select id="fridendVideoList" parameterType="string" resultMap="ResourcesResultMap">
+        SELECT tvu.video_id, tv.like_num, tvu.goods_id, tvu.user_id, tv.upload_time AS create_date, tvu.shop_id, tui.name AS username, tui.avatar_id AS userimgurl, tsp.`shop_name`, tsp.address
+        FROM t_video_user tvu ,t_user_info tui  , t_shop tsp   , t_video tv
+        WHERE tvu.user_id = tui.user_id AND tsp.u_id = tvu.shop_id  AND tv.u_id = tvu.video_id  AND tv.u_id = #{videoId}
+    </select>
+    <select id="videoDetail" parameterType="string" resultType="java.util.HashMap">
+        SELECT t.video_id, t.like_num, t.goods_id, t.user_id, t.create_date, t.shop_id, t.username, t.userimgurl, t.shop_name, t.address, IFNULL((tvur.user_id),0)AS  isUpvote  FROM
+        (SELECT tvu.video_id, tv.like_num, tvu.goods_id, tvu.user_id, tv.upload_time AS create_date, tvu.shop_id, tui.NAME AS username, tui.avatar_id AS userimgurl, tsp.`shop_name`, tsp.address
+        FROM t_video_user tvu ,t_user_info tui  , t_shop tsp   , t_video tv
+        WHERE tvu.user_id = tui.user_id AND tsp.u_id = tvu.shop_id  AND tv.u_id = tvu.video_id  AND tv.u_id = #{0}) t
+        LEFT JOIN  t_video_upvote_record tvur ON tvur.video_id=t.video_id AND tvur.user_id=#{1}
+    </select>
+    <select id="selectVideoListByUserId" parameterType="string" resultType="java.util.HashMap">
+        SELECT sr.u_id , sr.path , sr.md5 , sr.type FROM s_resources sr
+        INNER JOIN
+        ( SELECT tmr.data_id FROM t_metadata_rel tmr WHERE tmr.type = 1 AND tmr.record_id IN
+        ( SELECT tv.video_url FROM t_video_user tvu , t_video tv WHERE tvu.video_id = tv.u_id AND user_id = #{userId})) t ON t.data_id = sr.u_id
+    </select>
+    <select id="pagerVideoListByUserId" parameterType="com.zxwl.web.bean.po.resource.PagerParamApi" resultType="java.util.HashMap">
+        SELECT sr.u_id, sr.path, sr.md5 FROM s_resources sr
+        INNER JOIN
+        (SELECT tmr.data_id FROM t_metadata_rel tmr  WHERE tmr.type = 1 AND tmr.record_id IN
+        (SELECT  tv.video_url FROM t_video_user tvu, t_video tv  WHERE tvu.video_id = tv.u_id AND tvu.user_id = #{userId})) t ON t.data_id = sr.u_id LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="userVideoList" parameterType="string" resultType="java.util.HashMap">
+        SELECT t4.goods_id, t4.shop_name, t4.videourl, t5.videoimglist  FROM
+        (SELECT t1.u_id,tvu.goods_id,  ts.shop_name , sr.md5 AS videourl  FROM
+        (SELECT tv.u_id, tv.video_url FROM t_video_user tvu, t_video tv  WHERE tvu.video_id=tv.u_id AND tv.`status`=3 AND  tvu.user_id=#{userId}) t1
+        LEFT JOIN t_video_user tvu ON tvu.video_id=t1.u_id
+        LEFT JOIN t_shop ts ON tvu.shop_id  = ts.u_id
+        LEFT JOIN t_metadata_rel  tmr ON  t1.video_url= tmr.record_id AND tmr.type=1
+        LEFT JOIN s_resources sr  ON tmr.data_id= sr.u_id) t4,
+
+        (SELECT GROUP_CONCAT(t3.md5) AS videoimglist, t3.record_id   FROM
+        (SELECT sr.md5 , tmr.record_id, t2.u_id  AS t3videoid FROM
+        (SELECT tv.u_id, tv.video_url FROM t_video_user tvu, t_video tv  WHERE tvu.video_id=tv.u_id AND tv.`status`=3 AND  tvu.user_id=#{userId}) t2
+        LEFT JOIN t_video_user tvu ON tvu.video_id=t2.u_id
+        LEFT JOIN t_shop ts ON tvu.shop_id  = ts.u_id
+        LEFT JOIN t_metadata_rel  tmr ON  t2.video_url= tmr.record_id AND tmr.data_type=4
+        LEFT JOIN s_resources sr  ON tmr.data_id= sr.u_id) t3 GROUP BY t3.record_id) t5
+        WHERE t4.u_id=t5.record_id
+    </select>
+    <select id="totalUserVideoList" parameterType="string" resultType="java.util.HashMap">
+        SELECT sr.path, sr.md5
+        FROM t_video_user tvu, t_metadata_rel tmr, s_resources sr, t_video tv
+        WHERE
+        tvu.video_id=tv.u_id AND tv.video_url= tmr.record_id AND  tmr.data_id= sr.u_id AND  tmr.type = 1 AND  tvu.user_id = #{userId}
+    </select>
+
+    <select id="videoImgUrl" parameterType="string" resultType="java.util.HashMap">
+        SELECT sr.path, sr.md5, sr.u_id,tmr.type ,tmr.data_id
+        FROM t_metadata_rel tmr, s_resources sr WHERE  sr.u_id=tmr.data_id AND
+        tmr.data_id IN (SELECT data_id FROM t_metadata_rel WHERE record_id IN (SELECT tv.video_url FROM t_video tv  WHERE  tv.u_id =#{videoId} ))
+    </select>
+
+
+    <select id="selectSingleImage" parameterType="string" resultMap="ResourcesResultMap">
+        SELECT t2.*  FROM t_metadata_rel t1 LEFT JOIN s_resources t2 ON t1.data_id = t2.u_id WHERE t1.record_id = #{recordId} LIMIT 1
+    </select>
+
+    <select id="selectAllImage" parameterType="string" resultMap="ResourcesResultMap">
+        SELECT t2.*  FROM t_metadata_rel t1 LEFT JOIN s_resources t2 ON t1.data_id = t2.u_id WHERE t1.record_id = #{recordId}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="ResourcesResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.OrderAddressMapper">
+    <resultMap id="OrderAddressResultMap" type="com.zxwl.web.bean.OrderAddress">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="linkName" column="link_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkTel" column="link_tel" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkProvince" column="link_province" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkCity" column="link_city" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkArea" column="link_area" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkAddress" column="link_address" javaType="String" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'OrderAddressResultMap'"/>
+        <bind name="tableName" value="'t_order_address'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="OrderAddressResultMap">
+        select * from t_order_address where u_id=#{id}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="OrderAddressResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+
+    <select id="getAddress" parameterType="string" resultMap="OrderAddressResultMap">
+        SELECT
+        toa.u_id,
+        toa.link_name,
+        toa.link_tel,
+        toa.link_province,
+        toa.link_city,
+        toa.link_area,
+        toa.link_address
+        FROM
+        t_order_address toa
+        WHERE toa.user_id=#{userId}
+    </select>
+    <select id="getDefaultAddress" parameterType="string" resultMap="OrderAddressResultMap">
+        SELECT
+        toa.u_id,
+        toa.link_name,
+        toa.link_tel,
+        toa.link_province,
+        toa.link_city,
+        toa.link_area,
+        toa.link_address
+        FROM
+        t_order_address toa
+        WHERE
+        toa.u_id = (
+        SELECT
+        t_user_info.default_address
+        FROM
+        t_user_info
+        WHERE t_user_info.user_id=#{userId}
+        )
+    </select>
+    <select id="getAddressPager" resultMap="OrderAddressResultMap">
+        SELECT
+        toa.u_id,
+        toa.link_name,
+        toa.link_tel,
+        toa.link_province,
+        toa.link_city,
+        toa.link_area,
+        toa.link_address
+        FROM
+        t_order_address toa
+        WHERE toa.user_id=#{0}
+        limit #{1},#{2}
+    </select>
+</mapper>

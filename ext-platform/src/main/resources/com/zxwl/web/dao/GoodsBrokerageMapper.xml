@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.GoodsBrokerageMapper">
+    <resultMap id="GoodsBrokerageResultMap" type="com.zxwl.web.bean.GoodsBrokerage">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="percentageId" column="percentage_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="buyerId" column="buyer_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="orderId" column="order_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="dividend" column="dividend" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+            <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'GoodsBrokerageResultMap'"/>
+        <bind name="tableName" value="'t_goods_brokerage'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="GoodsBrokerageResultMap">
+        select * from t_goods_brokerage where u_id=#{id}
+    </select>
+    <select id="getRank" parameterType="string" resultType="java.util.HashMap">
+        <!--进行排名处理的查询,金额相等则排名相同-->
+        SELECT t1.`name`, t4.md5,sum(IFNULL(t2.dividend, 0)) AS `allbrokerage`
+        FROM t_user_info t1
+        LEFT JOIN t_goods_brokerage t2 ON t1.user_id = t2.user_id
+        LEFT JOIN t_metadata_rel t3 ON t1.avatar_id = t3.record_id
+        LEFT JOIN s_resources t4 ON t3.data_id = t4.u_id
+        GROUP BY t1.user_id ORDER BY allbrokerage DESC LIMIT 20 ;
+    </select>
+    <select id="getOwnerRank" parameterType="string" resultType="java.util.HashMap">
+        <!--进行个人排名处理的查询,金额相等则排名相同-->
+        SELECT t6.ttname,t6.ttuserid,t6.ttmd5, t6.ttallbokerage, t6.rank from
+        (SELECT tt.tname as ttname, tt.userid as ttuserid, tt.tmd5 as ttmd5, tt.allbrokerage as ttallbokerage, @rownum := @rownum + 1 AS rank
+        FROM
+        (SELECT t1.`name` AS tname, t1.user_id AS userid,  t4.md5 AS tmd5, sum(IFNULL(t2.dividend, 0)) AS `allbrokerage`
+        FROM t_user_info t1
+        LEFT JOIN t_goods_brokerage t2 ON t1.user_id = t2.user_id
+        LEFT JOIN t_metadata_rel t3 ON t1.avatar_id = t3.record_id
+        LEFT JOIN s_resources t4 ON t3.data_id = t4.u_id
+        GROUP BY t1.user_id ORDER BY allbrokerage DESC) tt, (SELECT @rownum := 0) r) t6
+        where t6.ttuserid= #{userId}
+    </select>
+    <select id="selectByUserId" parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
+        SELECT t1.percentage_id, t1.order_id, t1.dividend, t1.gmt_create, t2.goods_name FROM t_goods_brokerage t1
+        LEFT JOIN t_goods_order_info t2 ON t1.order_id = t2.order_id
+        WHERE t1.user_id = #{userId} LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="dataTotal" parameterType="string" resultType="java.util.HashMap">
+        SELECT t1.percentage_id, t1.order_id, t1.dividend, t1.gmt_create, t2.goods_name FROM t_goods_brokerage t1
+        LEFT JOIN t_goods_order_info t2 ON t1.order_id = t2.order_id
+        WHERE t1.user_id = #{userId}
+    </select>
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsBrokerageResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

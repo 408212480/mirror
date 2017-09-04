@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <import th:include="admin/include/head" th:remove="tag" />
+  <link rel="stylesheet" th:href="@{/plugins/jquery-treegrid/css/jquery.treegrid.css}"/>
+  <link rel="stylesheet" th:href="@{/plugin/Excel-Assets/css/sheetjs.css}"/>
+  <link rel="stylesheet" media="screen" th:href="@{/plugin/Excel-Assets/vendor/jquery.handsontable.full.css}"/>
+  <link rel="stylesheet" media="screen" th:href="@{/plugin/Excel-Assets/vendor/samples.css}"/>
+  <link rel="stylesheet" media="screen" th:href="@{/plugin/Excel-Assets/vendor/alertify.css}"/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+  <import th:include="admin/include/layout" th:remove="tag" />
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <import th:include="admin/include/title" th:remove="tag" />
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">射频管理</h3>
+
+          <div id="btn-groups" class="box-tools pull-right" style="display: inline">
+            <!-- 判断是否有新增权限 -->
+            <button th:if="${user.hasAccessModuleAction('radiofrequency', 'C')}" type="button" class="btn  btn-primary btn-sm btn-add" data-toggle="modal" data-target="#modal-add">导入</button>
+            <!--<button th:if="${user.hasAccessModuleAction('radiofrequency', 'C')}" type="button" class="btn  btn-primary btn-sm btn-add btn-batch" data-toggle="modal" data-target="#myModal-batch">批量导入</button>-->
+          </div>
+          </div>
+        <div class="box-body">
+
+          <table id="role_list" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>射频序号</th>
+              <th>射频编码</th>
+              <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+
+        </div>
+        <!-- /.box-body -->
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <import th:include="admin/include/copyright" th:remove="tag" />
+
+</div>
+
+
+<!-- ./wrapper -->
+<import th:include="admin/radiofrequency/form" th:remove="tag" />
+<!--<import th:include="admin/radiofrequency/modal" th:remove="tag" />-->
+<import th:include="admin/include/footer" th:remove="tag" />
+<!-- bootstrap treegrid -->
+<script th:src="@{/plugins/jquery-treegrid/js/jquery.treegrid.min.js}"></script>
+<script th:src="@{/plugins/jquery-treegrid/js/jquery.treegrid.bootstrap3.js}"></script>
+<script th:src="@{/plugins/jquery-treegrid/extension/jquery.treegrid.extension.js}"></script>
+<script th:inline="javascript">
+    var accessCreate = [[${user.hasAccessModuleAction('radiofrequency', 'C')}]];
+    var accessUpdate = [[${user.hasAccessModuleAction('radiofrequency', 'U')}]];
+    var accessDelete = [[${user.hasAccessModuleAction('radiofrequency', 'D')}]];
+</script>
+<script th:src="@{/js/admin/radiofrequency/radiofrequency.js}"></script>
+
+<!--<script th:src="@{/plugin/Excel-Assets/vendor/alertify.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/vendor/jquery.min.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/vendor/jquery.handsontable.full.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/js/xlsx.core.min.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/js/shim.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/js/sheetjsw.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/js/xlsx.full.min.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/js/dropsheet.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/js/main.js}"></script>-->
+<!--<script th:src="@{/plugin/Excel-Assets/vendor/spin.js}"></script>-->
+
+<!--<script th:inline="javascript">-->
+  <!--/*<![CDATA[*/-->
+  <!--var _gaq = _gaq || [];-->
+  <!--_gaq.push(['_setAccount', 'UA-36810333-1']);-->
+  <!--_gaq.push(['_setDomainName', 'sheetjs.com']);-->
+  <!--_gaq.push(['_setAllowLinker', true]);-->
+  <!--_gaq.push(['_trackPageview']);-->
+
+  <!--(function() {-->
+      <!--var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;-->
+      <!--ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';-->
+      <!--var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);-->
+  <!--})();-->
+  <!--/*]]>*/-->
+<!--//</script>-->
+</body>
+</html>

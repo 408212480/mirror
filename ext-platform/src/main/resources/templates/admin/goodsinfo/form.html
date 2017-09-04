@@ -1,0 +1,241 @@
+
+<div class="modal fade" id="modal-tree">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">服装类别操作</h4>
+            </div>
+            <form name="add_tree_form"  id="add_tree_form" method="post" data-type="0">
+                <div class="modal-body">
+                    <!-- id -->
+                    <input type="hidden" name="uid" id="id" value="" />
+                    <!-- 父id -->
+                    <input type="hidden" name="parentCode" id="parent_code" value=""/>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="parent_code" class="control-label" id="parent_code_label">父级</label>
+                                <input type="text" class="form-control" name="preClassName" id="parent_code_name" value="" disabled="disabled" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="class_code" class="control-label">类别编码</label>
+                                <input type="text" class="form-control" name="classCode" id="class_code" value="" placeholder="请输入类别" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="class_name" class="control-label">类别名称</label>
+                                <input type="text" class="form-control" name="className" id="class_name" value="" placeholder="请输入类别名称"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal add -->
+
+
+<div class="modal fade" id="modal-basebox">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">新增/编辑服装</h4>
+            </div>
+            <form name="goods_form"  id="goods_form" method="post" data-type="0">
+                <div class="modal-body">
+                    <!-- id -->
+                    <input type="hidden" name="uid" id="goods_id" value="" />
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="goods_title" class="control-label">商品名称</label>
+                                <input type="text" class="form-control" name="goodsTitle" id="goods_title" value="" placeholder="请输入商品名称" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="goods_price" class="control-label">价格</label>
+                                <input type="number" class="form-control" name="goodsPrice" id="goods_price" value="" placeholder="商品单价"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="goods_class_code" class="control-label">类别编码</label>
+                                <select class="form-control" id="goods_class_code">
+                                    <option value="00000001">女装(00000001)</option>
+                                    <option value="00000002">男装(00000002)</option>
+                                    <option value="00000003">连衣裙(00000003)</option>
+                                    <option value="00000004">职业装(00000004)</option>
+                                    <option value="00000005">OL装(00000005)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group carousel_img-list">
+                                <label class="control-label">商品轮播图</label>
+                                <input id="carousel_upload" type="file" name="file" multiple="multiple" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group img-list">
+                                <label class="control-label">商品图片</label>
+                                <input id="kv-explorer" type="file" name="file" multiple="multiple" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">店铺名称</label>
+                                <div class="form-group" id="shop_list">
+                                    <label>
+                                        <input type="checkbox"/>
+                                        爱客（旗舰店）
+                                    </label>
+
+                                    <label>
+                                        <input type="checkbox"/>
+                                        爱客（嘉禾店）
+                                    </label>
+
+                                    <label>
+                                        <input type="checkbox" disabled=""/>
+                                        爱客（金尚店）
+                                    </label>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="goods_describe" class="control-label">详情</label>
+                                <textarea class="form-control" name="goodsDescribe" id="goods_describe" rows="5" placeholder="商品详细描述和展示 (非必填)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal add -->
+
+<div class="modal fade" id="modal-readonly">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">查看详情</h4>
+            </div>
+                <form class="form-horizontal">
+                <div class="modal-body">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="form-group has-success">
+                                <label class="col-sm-2 control-label">商品名称：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="input_goods_name" value="" disabled="disabled"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group has-success">
+                                <label class="col-sm-2 control-label">价格：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="input_goods_price" value="" disabled="disabled"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group has-success">
+                                <label class="col-sm-2 control-label">类别编码：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="input_goods_classcode" value="" disabled="disabled"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group has-success">
+                                <label class="col-sm-2 control-label">商品图片：</label>
+                                <div class="col-sm-8" id="img-list">
+                                    <img src="file/image/f4b69af0b284e4c5ac05b6b9976843ca" style="width: 100px; height: 100px"/>&nbsp;&nbsp;
+                                    <img src="file/image/f4b69af0b284e4c5ac05b6b9976843ca" style="width: 100px; height: 100px"/>&nbsp;&nbsp;
+                                    <img src="file/image/f4b69af0b284e4c5ac05b6b9976843ca" style="width: 100px; height: 100px"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group has-success">
+                                <label class="col-sm-2 control-label">店铺名称：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="input_goods_shopname" value="" disabled="disabled"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group has-success">
+                                <label class="col-sm-2 control-label">详情：</label>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" rows="5" id="input_goods_describe" disabled="disabled"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-block btn-success" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+                </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal add -->

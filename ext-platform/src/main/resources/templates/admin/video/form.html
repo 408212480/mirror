@@ -1,0 +1,99 @@
+
+<div class="modal fade" id="modal-info" >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border-radius: 3px">
+            <div class="modal-header">
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                    <!--<span aria-hidden="true">&times;</span></button>-->
+                <h4 style="text-align: center" class="modal-title">视频详情</h4>
+            </div>
+            <form name="info_form" id="info_form" method="get" action="">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="userName" class="control-label">试衣账号</label>
+                                <input type="text" class="form-control" name="userName" id="userName"  disabled="disabled" style="border: none" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fidId" class="control-label">视频FID</label>
+                                <input type="text" class="form-control" name="fidId" id="fidId"  disabled="disabled" style="border: none" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="code" class="control-label">设备编码</label>
+                                <input type="text" class="form-control" name="code" id="code"  disabled="disabled" style="border: none"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="uploadTime" class="control-label">上传时间</label>
+                                <input type="text" class="form-control" name="uploadTime" id="uploadTime"  disabled="disabled" style="border: none" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="likeNum" class="control-label">赞</label>
+                                <input type="text" class="form-control" name="likeNum" id="likeNum"  disabled="disabled" style="border: none"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="video" class="control-label">试衣视频</label>
+                            <div class="form-group">
+                                <video src="" controls="controls" id="video" style="width: 100px">
+                                    您的浏览器不支持 video 标签
+                                </video>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label  class="control-label">视频图片</label>
+                                <div id="videoImgList">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button style="width: 100%" type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal edit -->
+
+<!-- 信息删除确认 -->
+<div class="modal fade" id="modal-disabled">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content message_align">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="title">提示信息</h4>
+            </div>
+            <div class="modal-body">
+                <p>您确认要禁用该视频吗？</p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="url"/>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button"  class="btn btn-success btn-close-sure" data-dismiss="modal">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.GoodsInfoMapper">
+    <resultMap id="GoodsInfoResultMap" type="com.zxwl.web.bean.GoodsInfo">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="classCode" column="class_code" javaType="String" jdbcType="VARCHAR"/>
+        <result property="title" column="title" javaType="String" jdbcType="VARCHAR"/>
+        <result property="price" column="price" javaType="Double" jdbcType="DECIMAL"/>
+        <result property="quality" column="quality" javaType="int" jdbcType="INTEGER"/>
+        <result property="describe" column="describe" javaType="String" jdbcType="BLOB"/>
+        <result property="imgId" column="img_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="carouselImgUrl" column="carousel_img_url" javaType="String" jdbcType="VARCHAR"/>
+
+        <result property="creatorId" column="creator_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="GoodsInfoResultPagerMap" type="com.zxwl.web.bean.GoodsInfo">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="classCode" column="class_code" javaType="String" jdbcType="VARCHAR"/>
+        <result property="title" column="title" javaType="String" jdbcType="VARCHAR"/>
+        <result property="price" column="price" javaType="Double" jdbcType="DECIMAL"/>
+        <result property="quality" column="quality" javaType="int" jdbcType="INTEGER"/>
+        <result property="describe" column="describe" javaType="String" jdbcType="BLOB"/>
+        <result property="imgId" column="img_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="shopName" column="shop_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="creatorId" column="creator_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'GoodsInfoResultMap'"/>
+        <bind name="tableName" value="'t_goods_info'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="GoodsInfoResultMap">
+        SELECT
+        t.*, s.shop_id shopId
+        FROM
+        t_goods_info t,
+        t_shop_goods s
+        where t.u_id=#{id}
+        AND s.goods_id = #{id}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsInfoResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+
+    <select id="selectSingleInfo" parameterType="string" resultMap="GoodsInfoResultPagerMap">
+        select t1.*, GROUP_CONCAT(t3.shop_name) as shop_name from t_goods_info t1
+        left join t_shop_goods t2 on t1.u_id = t2.goods_id
+        left join t_shop t3 on t3.u_id = t2.shop_id
+        where t1.u_id = #{uid}
+    </select>
+
+    <select id="selectList" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsInfoResultPagerMap">
+        select t1.*, GROUP_CONCAT(t3.shop_name) as shop_name from t_goods_info t1
+        left join t_shop_goods t2 on t1.u_id = t2.goods_id
+        left join t_shop t3 on t3.u_id = t2.shop_id
+        where t1.class_code = #{param.class_code}
+        group by t1.u_id
+        limit #{pageIndex}, #{pageSize}
+    </select>
+
+    <select id="selectByVideoId" parameterType="string" resultType="string">
+        SELECT
+        t_goods_info.u_id
+        FROM
+        t_goods_info
+        JOIN t_goods_info_spec ON t_goods_info.u_id = t_goods_info_spec.goods_id
+        JOIN t_video_goods ON t_video_goods.goodsspec_id = t_goods_info_spec.u_id
+        JOIN t_video ON t_video.u_id = t_video_goods.video_id
+        WHERE
+        t_video.u_id = #{id}
+    </select>
+
+</mapper>

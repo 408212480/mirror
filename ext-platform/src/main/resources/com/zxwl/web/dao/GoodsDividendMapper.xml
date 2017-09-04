@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.GoodsDividendMapper">
+    <resultMap id="GoodsDividendResultMap" type="com.zxwl.web.bean.GoodsDividend">
+        <id property="id" column="id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="goodsId" column="goods_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="title" column="title" javaType="string" jdbcType="VARCHAR"/>
+        <result property="shopName" column="shop_name" javaType="string" jdbcType="VARCHAR"/>
+        <result property="percentage" column="percentage" javaType="FLOAT" jdbcType="FLOAT"/>
+        <result property="dividend" column="dividend" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="buyedCount" column="buyed_count" javaType="int" jdbcType="INTEGER"/>
+        <result property="dividendCount" column="dividend_count" javaType="int" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="UserDividendResultMap" type="com.zxwl.web.bean.UserDividend">
+        <id property="id" column="id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="userAccount" column="user_account" javaType="string" jdbcType="VARCHAR"/>
+        <result property="name" column="name" javaType="string" jdbcType="VARCHAR"/>
+        <result property="dividend" column="dividend" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+        <result property="buyedCount" column="buyed_count" javaType="int" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="GoodsShopResultMap" type="com.zxwl.web.bean.GoodsShop">
+        <id property="id" column="goods_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="title" column="title" javaType="string" jdbcType="VARCHAR"/>
+        <result property="shopName" column="shop_name" javaType="string" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectGoodsDividend" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsDividendResultMap">
+        SELECT
+        t_goods_percentage.u_id AS id,
+        tgi.u_id AS goods_id,
+        tgi.title AS title,
+        t_goods_percentage.percentage AS percentage,
+        t.shop_name AS shop_name
+        FROM
+        t_goods_percentage
+        LEFT JOIN t_goods_info AS tgi ON t_goods_percentage.goods_id = tgi.u_id
+        LEFT JOIN (
+        SELECT
+        tgi.u_id AS goods_id,
+        ts.u_id AS shop_id,
+        ts.shop_name AS shop_name
+        FROM
+        t_shop_goods AS tsg
+        JOIN t_goods_info AS tgi ON tgi.u_id = tsg.goods_id
+        JOIN t_shop AS ts ON ts.u_id = tsg.shop_id
+        ) AS t ON t_goods_percentage.goods_id = t.goods_id
+    </select>
+    <select id="selectGoodsDividendPage" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsDividendResultMap">
+        SELECT
+        t_goods_percentage.u_id AS id,
+        tgi.u_id AS goods_id,
+        tgi.title AS title,
+        t_goods_percentage.percentage AS percentage,
+        t.shop_name AS shop_name
+        FROM
+        t_goods_percentage
+        LEFT JOIN t_goods_info AS tgi ON t_goods_percentage.goods_id = tgi.u_id
+        LEFT JOIN (
+        SELECT
+        tgi.u_id AS goods_id,
+        ts.u_id AS shop_id,
+        ts.shop_name AS shop_name
+        FROM
+        t_shop_goods AS tsg
+        JOIN t_goods_info AS tgi ON tgi.u_id = tsg.goods_id
+        JOIN t_shop AS ts ON ts.u_id = tsg.shop_id
+        ) AS t ON t_goods_percentage.goods_id = t.goods_id
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="selectGoodsOrderInfo" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsDividendResultMap">
+        SELECT
+        t_goods_percentage.u_id AS id,
+        p.dividend AS dividend,
+        p.dividend_count AS dividend_count,
+        c.buy_count AS buyed_count
+        FROM t_goods_percentage
+        LEFT JOIN (
+        SELECT
+        t_goods_percentage.goods_id AS goods_id,
+        tgb.percentage_id AS percentage_id,
+        SUM(tgb.dividend) AS dividend,
+        COUNT(tgb.dividend) AS dividend_count
+        FROM
+        t_goods_brokerage AS tgb
+        JOIN t_goods_percentage ON t_goods_percentage.u_id = tgb.percentage_id
+        GROUP BY
+        t_goods_percentage.goods_id
+        ) AS p ON t_goods_percentage.goods_id = p.goods_id
+        JOIN (
+        SELECT
+        tgoi.goods_id AS goods_id,
+        count(tgoi.acount) AS buy_count
+        FROM
+        t_goods_order_info AS tgoi
+        JOIN t_goods_percentage ON tgoi.goods_id = t_goods_percentage.goods_id
+        GROUP BY
+        t_goods_percentage.goods_id
+        ) AS c ON t_goods_percentage.goods_id = c.goods_id;
+    </select>
+    <select id="selectUserDividend" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="UserDividendResultMap">
+        SELECT
+        t_goods_brokerage.user_id AS id,
+        s_user.username AS user_account,
+        t_user_info.`name` AS name,
+        SUM(t_goods_brokerage.dividend) AS dividend,
+        COUNT(t_goods_brokerage.order_id) AS buyed_count
+        FROM
+        t_user_info
+        JOIN t_goods_brokerage ON t_goods_brokerage.user_id = t_user_info.user_id
+        JOIN s_user ON t_user_info.user_id = s_user.u_id
+    </select>
+    <select id="selectUserDividendPage" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="UserDividendResultMap">
+        SELECT
+        t_goods_brokerage.user_id AS id,
+        s_user.username AS user_account,
+        t_user_info.`name` AS name,
+        SUM(t_goods_brokerage.dividend) AS dividend,
+        COUNT(t_goods_brokerage.order_id) AS buyed_count
+        FROM
+        t_user_info
+        JOIN t_goods_brokerage ON t_goods_brokerage.user_id = t_user_info.user_id
+        JOIN s_user ON t_user_info.user_id = s_user.u_id
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="selectGoodsShop" resultMap="GoodsShopResultMap">
+        SELECT
+        t_shop_goods.goods_id AS goods_id,
+        t_goods_info.title AS title,
+        t_shop.shop_name AS shop_name
+        FROM
+        t_shop_goods
+        JOIN t_goods_info ON t_shop_goods.goods_id = t_goods_info.u_id
+        JOIN t_shop ON t_shop_goods.shop_id = t_shop.u_id
+        WHERE
+        t_shop_goods.goods_id NOT IN (
+        SELECT
+        goods_id
+        FROM
+        t_goods_percentage
+        )
+    </select>
+</mapper>

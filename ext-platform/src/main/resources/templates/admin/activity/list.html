@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <import th:include="admin/include/head" th:remove="tag"/>
+    <link rel="stylesheet" th:href="@{/plugins/jquery-treegrid/css/jquery.treegrid.css}"/>
+    <link rel="stylesheet" th:href="@{/plugins/bootstrap-switch/css/bootstrap-switch.min.css}"/>
+    <link rel="stylesheet" th:href="@{/plugins/bootstrap-select/css/bootstrap-select.min.css}"/>
+    <link rel="stylesheet" th:href="@{/plugins/fileinput/css/fileinput.css}"/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <import th:include="admin/include/layout" th:remove="tag"/>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <import th:include="admin/include/title" th:remove="tag"/>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#manage_list" id="default-tab" data-toggle="tab">活动管理</a></li>
+                    <li><a href="#release_list" id="release_tab" data-toggle="tab">活动发布</a></li>
+                    <li class="pull-right "><a id="add_btn">新增</a></li>
+                    <li class="pull-right "><a id="btn_release">发布</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="manage_list">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-condensed table-hover" id="list_table">
+                                    <thead>
+                                    <tr role="row">
+                                        <th>ID</th>
+                                        <th>活动标题</th>
+                                        <th>开始时间</th>
+                                        <th>结束时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="release_list">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div id="area_tree"></div>
+                            </div>
+                            <div class="box-body col-md-9">
+                                <table class="table table-condensed table-hover" id="user_list">
+                                    <thead>
+                                    <tr>
+                                        <th>选择</th>
+                                        <th>ID</th>
+                                        <th>用户账号</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <import th:include="admin/include/copyright" th:remove="tag"/>
+</div>
+<!-- ./wrapper -->
+<import th:include="admin/activity/form" th:remove="tag"/>
+
+<import th:include="admin/include/footer" th:remove="tag"/>
+<script th:src="@{/plugins/bootstrap-switch/js/bootstrap-switch.min.js}"></script>
+<script th:src="@{/plugins/bootstrap-select/js/bootstrap-select.min.js}"></script>
+<script th:src="@{/plugins/jquery-treegrid/js/jquery.treegrid.min.js}"></script>
+<script th:src="@{/plugins/jquery-treegrid/js/jquery.treegrid.bootstrap3.js}"></script>
+
+<script th:inline="javascript">
+    var accessCreate = [[${user.hasAccessModuleAction('activity', 'C')}]];
+    var accessUpdate = [[${user.hasAccessModuleAction('activity', 'U')}]];
+</script>
+<script th:src="@{/js/admin/activity/list.js}"></script>
+</body>
+</html>

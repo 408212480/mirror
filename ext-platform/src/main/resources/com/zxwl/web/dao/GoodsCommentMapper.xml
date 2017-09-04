@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.GoodsCommentMapper">
+    <resultMap id="GoodsCommentResultMap" type="com.zxwl.web.bean.GoodsComment">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="commentLevel" column="comment_level" javaType="int" jdbcType="INTEGER"/>
+        <result property="comment" column="comment" javaType="String" jdbcType="VARCHAR"/>
+        <result property="goodsId" column="goods_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="orderId" column="order_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+        <result property="recordId" column="record_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="goodsspcInfo" column="goodsspc_info" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'GoodsCommentResultMap'"/>
+        <bind name="tableName" value="'t_goods_comment'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="GoodsCommentResultMap">
+        select * from t_goods_comment where u_id=#{id}
+    </select>
+    <select id="commentList" parameterType="com.zxwl.web.bean.api.PagerGoodsCommentList" resultType="java.util.HashMap">
+        SELECT t1.comment_level, t1.`comment`, t1.gmt_create, t1.username, t1.userimgpath, t1.goodsspc_info, t2.cimglist
+        FROM
+
+        (SELECT tui.avatar_id AS userimgpath, tgc.goods_id, tgc.comment_level, tgc.`comment`, tgc.gmt_create,tui.`name`
+        AS username, tgc.goodsspc_info, tgc.record_id AS recordid
+        FROM t_goods_comment tgc, t_user_info tui
+        WHERE tgc.user_id=tui.user_id AND tgc.goods_id=#{goodsId}) t1 LEFT JOIN
+
+        (SELECT GROUP_CONCAT(srt.md5) AS cimglist, tgc.goods_id AS goodsid, tgc.record_id AS recordid FROM
+        t_goods_comment tgc
+        LEFT JOIN t_metadata_rel tmr ON tgc.record_id= tmr.record_id AND tmr.data_type=3
+        LEFT JOIN s_resources srt ON tmr.data_id= srt.u_id AND tgc.goods_id = #{goodsId} GROUP BY tmr.record_id) t2
+        ON t1.recordid= t2.recordid LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalComment" parameterType="string" resultType="int">
+        select count( goods_id ) from t_goods_comment where goods_id =#{goodsId}
+    </select>
+    <select id="userCommentList" parameterType="com.zxwl.web.bean.api.PagerGoodsCommentList"
+            resultType="java.util.HashMap">
+        SELECT t3.comment_level, t3.`comment`,t3.title, t3.price, t3.gmt_create, t3.goodsspc_info,
+        t2.cimglist,t3.shopimg FROM
+        (SELECT t1.goods_id, t1.comment_level, t1.img_id, t1.`comment`, t1.gmt_create, t1.goodsspc_info,t1.title,
+        t1.price,t1.recordid , sr.md5 AS shopimg FROM
+        ( SELECT tgc.goods_id, tgc.comment_level,tgi.img_id, tgc.`comment`, tgc.gmt_create, tgc.goodsspc_info,
+        tgi.title, tgi.price,tgc.record_id AS recordid
+        FROM t_goods_comment tgc, t_goods_info tgi
+        WHERE tgc.goods_id=tgi.u_id AND tgc.user_id=#{goodsId} ) t1
+        LEFT JOIN t_metadata_rel tmr ON t1.img_id=tmr.record_id AND tmr.data_type=2
+        LEFT JOIN s_resources sr ON tmr.data_id=sr.u_id GROUP BY t1.img_id) t3
+        LEFT JOIN
+        (SELECT GROUP_CONCAT(srt.md5) AS cimglist, tgc.goods_id AS goodsid
+        FROM t_metadata_rel tmr
+        LEFT JOIN t_goods_comment tgc ON tmr.data_type=3 AND tgc.record_id= tmr.record_id
+        LEFT JOIN s_resources srt
+        ON tmr.data_id= srt.u_id AND tgc.user_id = #{goodsId} GROUP BY tgc.goods_id ) t2
+        ON t3.goods_id=t2.goodsid LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalUserComment" parameterType="string" resultType="int">
+        select count( goods_id ) from t_goods_comment where user_id =#{userId}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsCommentResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.GoodsOrderInfoMapper">
+    <resultMap id="GoodsOrderInfoResultMap" type="com.zxwl.web.bean.GoodsOrderInfo">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+        <result property="goodsId" column="goods_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="goodsName" column="goods_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="acount" column="acount" javaType="int" jdbcType="INTEGER"/>
+        <result property="refundStatus" column="refund_status" javaType="int" jdbcType="INTEGER"/>
+        <result property="price" column="price" javaType="java.math.BigDecimal" jdbcType="INTEGER"/>
+        <result property="orderId" column="order_id" javaType="String" jdbcType="VARCHAR"/>
+        <result property="goodsSpec" column="goods_spec" javaType="String" jdbcType="VARCHAR"/>
+        <result property="orderExpressNo" column="order_express_no" javaType="String" jdbcType="VARCHAR"/>
+        <result property="orderExpressCompany" column="order_express_company" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkName" column="link_name" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkTel" column="link_tel" javaType="String" jdbcType="VARCHAR"/>
+        <result property="linkAddress" column="link_address" javaType="String" jdbcType="VARCHAR"/>
+        <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtDelivery" column="gmt_delivery" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtRefund" column="gmt_refund" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'GoodsOrderInfoResultMap'"/>
+        <bind name="tableName" value="'t_goods_order_info'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="GoodsOrderInfoResultMap">
+        select * from t_goods_order_info where u_id=#{id}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsOrderInfoResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+    <select id="buySum" parameterType="string" resultType="int">
+        SELECT IFNULL(SUM(goi.acount),0) AS buysum FROM t_goods_order_info goi WHERE goi.goods_id=#{goodsId}
+    </select>
+    <select id="getOrderInfo" parameterType="com.zxwl.web.bean.GoodsOrderInfo"
+            resultMap="GoodsOrderInfoResultMap">
+        SELECT
+        tgoi.u_id,
+        tgoi.order_id,
+        tgoi.goods_name,
+        tgoi.acount,
+        tgoi.price,
+        t_goods_order.submit_time,
+        t_goods_order.order_status,
+        t_goods_info_spec.size,
+        t_goods_info_spec.color,
+        t_shop.shop_name,
+        s_user.username
+        FROM
+        t_goods_order_info tgoi
+        JOIN t_goods_order ON t_goods_order.u_id=tgoi.order_id
+        JOIN t_goods_info_spec  ON t_goods_info_spec.u_id=tgoi.goods_spec
+        JOIN t_shop ON t_shop.u_id = (SELECT tgo.shop_id FROM t_goods_order tgo WHERE tgo.u_id=tgoi.order_id)
+        JOIN s_user ON s_user.u_id=(SELECT t_goods_order.user_id FROM t_goods_order WHERE t_goods_order.u_id=tgoi.order_id )
+    </select>
+    <select id="getOrderInfoPager" parameterType="com.zxwl.web.bean.GoodsOrderInfo"
+            resultMap="GoodsOrderInfoResultMap">
+        SELECT
+        tgoi.u_id,
+        tgoi.order_id,
+        tgoi.goods_name,
+        tgoi.acount,
+        tgoi.price,
+        t_goods_order.submit_time,
+        t_goods_order.order_status,
+        t_goods_info_spec.size,
+        t_goods_info_spec.color,
+        t_shop.shop_name,
+        s_user.username
+        FROM
+        t_goods_order_info tgoi
+        JOIN t_goods_order ON t_goods_order.u_id=tgoi.order_id
+        JOIN t_goods_info_spec  ON t_goods_info_spec.u_id=tgoi.goods_spec
+        JOIN t_shop ON t_shop.u_id = (SELECT tgo.shop_id FROM t_goods_order tgo WHERE tgo.u_id=tgoi.order_id)
+        JOIN s_user ON s_user.u_id=(SELECT t_goods_order.user_id FROM t_goods_order WHERE t_goods_order.u_id=tgoi.order_id )
+        limit #{pageIndex},#{pageSize}
+    </select>
+
+
+    <select id="allOrderList" parameterType="com.zxwl.web.bean.GoodsOrderInfo" resultMap="GoodsOrderInfoResultMap">
+        SELECT
+        tgo.u_id,
+        tgo.total_price,
+        tgo.order_status,
+        t_goods_order_info.goods_name,
+        t_goods_order_info.acount,
+        t_goods_order_info.goods_id,
+        t_goods_order_info.order_id,
+        t_goods_info_spec.color,
+        t_goods_info_spec.size,
+        t_shop.shop_name
+        FROM
+        t_goods_order tgo
+        JOIN t_goods_order_info ON t_goods_order_info.order_id = tgo.u_id
+        JOIN t_goods_info_spec ON t_goods_order_info.goods_spec = t_goods_info_spec.u_id
+        JOIN t_shop ON t_shop.u_id = (
+        SELECT
+        tgo.shop_id
+        FROM
+        t_goods_order tgo
+        WHERE
+        tgo.u_id = t_goods_order_info.order_id
+        )
+        WHERE tgo.user_id=#{userId}
+        limit #{pageIndex},#{pageSize}
+
+    </select>
+
+    <select id="orderList" parameterType="com.zxwl.web.bean.GoodsOrderInfo" resultMap="GoodsOrderInfoResultMap">
+        SELECT
+        tgo.u_id,
+        tgo.total_price,
+        tgo.order_status,
+        t_goods_order_info.goods_name,
+        t_goods_order_info.acount,
+        t_goods_order_info.goods_id,
+        t_goods_order_info.order_id,
+        t_goods_info_spec.color,
+        t_goods_info_spec.size,
+        t_shop.shop_name
+        FROM
+        t_goods_order tgo
+        JOIN t_goods_order_info ON t_goods_order_info.order_id = tgo.u_id
+        JOIN t_goods_info_spec ON t_goods_order_info.goods_spec = t_goods_info_spec.u_id
+        JOIN t_shop ON t_shop.u_id = (
+        SELECT
+        tgo.shop_id
+        FROM
+        t_goods_order tgo
+        WHERE
+        tgo.u_id = t_goods_order_info.order_id
+        )
+        WHERE tgo.user_id=#{userId} and tgo.order_status=#{orderStatus}
+        limit #{pageIndex},#{pageSize}
+    </select>
+
+    <select id="detail" parameterType="string" resultMap="GoodsOrderInfoResultMap">
+        SELECT
+        tgo.total_price,
+        tgo.order_status,
+        tgo.pay_type,
+        t_goods_order_info.goods_name,
+        t_goods_order_info.acount,
+        t_goods_order_info.goods_id,
+        t_goods_order_info.order_id,
+        t_goods_order_info.link_name,
+        t_goods_order_info.link_tel,
+        t_goods_order_info.link_address,
+        t_goods_order_info.gmt_delivery,
+        t_goods_order_info.refund_status,
+        t_goods_order_info.gmt_modify,
+        t_goods_order_info.gmt_refund,
+        t_goods_info_spec.color,
+        t_goods_info_spec.size,
+        t_shop.shop_name,
+        t_user_info.name username
+        FROM
+        t_goods_order tgo
+        JOIN t_goods_order_info ON t_goods_order_info.order_id = tgo.u_id
+        JOIN t_goods_info_spec ON t_goods_order_info.goods_spec = t_goods_info_spec.u_id
+        JOIN t_user_info ON t_user_info.user_id=tgo.user_id
+        JOIN t_shop ON t_shop.u_id = (
+        SELECT
+        tgo.shop_id
+        FROM
+        t_goods_order tgo
+        WHERE
+        tgo.u_id = t_goods_order_info.order_id
+        )
+        WHERE  tgo.u_id=#{orderId}
+    </select>
+    <select id="goodsImg" parameterType="com.zxwl.web.bean.GoodsOrderInfo" resultType="string">
+        SELECT
+        sr.md5
+        FROM
+        s_resources sr
+        WHERE
+        sr.u_id = (
+        SELECT
+        t_metadata_rel.data_id
+        FROM
+        t_metadata_rel
+        WHERE
+        t_metadata_rel.record_id = (
+        SELECT
+        t_goods_info.img_id
+        FROM
+        t_goods_info
+        WHERE
+        t_goods_info.u_id = #{goodsId}
+        )
+        LIMIT 0,1
+        )
+    </select>
+</mapper>

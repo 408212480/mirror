@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <import th:include="admin/include/head" th:remove="tag"/>
+    <link rel="stylesheet" th:href="@{/plugins/jquery-treegrid/css/jquery.treegrid.css}"/>
+    <link rel="stylesheet" th:href="@{/plugins/bootstrap-switch/css/bootstrap-switch.min.css}"/>
+    <link rel="stylesheet" th:href="@{/plugins/bootstrap-select/css/bootstrap-select.min.css}"/>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <import th:include="admin/include/layout" th:remove="tag"/>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <import th:include="admin/include/title" th:remove="tag"/>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#base_list" data-toggle="tab">分佣管理</a></li>
+                    <li><a href="#user_list" data-toggle="tab">分佣用户列表</a></li>
+
+                    <li class="pull-right"><a href="javascript:;" class="text-primary" id="btn_add_new"><i class="fa fa-plus"></i> 新增分佣</a></li>
+                </ul>
+                <!-- .tab-content -->
+                <div class="tab-content">
+
+                    <div class="tab-pane active" id="base_list">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="base_data_table" class="table table-bordered table-hover dataTable" role="grid" aria-describedby="example2_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">ID</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">服装编码</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">商品名称</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">店铺名称</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="Engine version: activate to sort column ascending">分佣比例(%)</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">分佣总金额</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">购买总次数</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">分佣人数</th>
+                                        <th class="sorting" tabindex="0" aria-controls="base_data_table" rowspan="1" colspan="1" aria-label="CSS grade: activate to sort column ascending">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="user_list">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="user_list_table" class="table table-bordered table-hover dataTable" role="grid" aria-describedby="example2_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">ID</th>
+                                        <th class="sorting" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">用户帐号</th>
+                                        <th class="sorting" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">昵称</th>
+                                        <th class="sorting" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">被购买次数</th>
+                                        <th class="sorting" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">获得分佣金额</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.tab-content -->
+
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <import th:include="admin/include/copyright" th:remove="tag" />
+</div>
+<!-- ./wrapper -->
+<import th:include="admin/dividend/form" th:remove="tag" />
+
+<import th:include="admin/include/footer" th:remove="tag" />
+<script th:src="@{/plugins/jquery-treegrid/js/jquery.treegrid.min.js}"></script>
+<script th:src="@{/plugins/jquery-treegrid/js/jquery.treegrid.bootstrap3.js}"></script>
+<script th:src="@{/plugins/bootstrap-switch/js/bootstrap-switch.min.js}"></script>
+<script th:src="@{/plugins/bootstrap-select/js/bootstrap-select.min.js}"></script>
+
+<script th:inline="javascript">
+    // 用户权限
+    var accessCreate = [[${user.hasAccessModuleAction('module', 'C')}]];
+    var accessUpdate = [[${user.hasAccessModuleAction('module', 'U')}]];
+    var accessDelete = [[${user.hasAccessModuleAction('module', 'D')}]];
+</script>
+<script th:src="@{/js/admin/dividend/list.js}"></script>
+</body>
+</html>

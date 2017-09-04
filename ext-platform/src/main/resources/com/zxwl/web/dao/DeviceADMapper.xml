@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.DeviceADMapper">
+    <resultMap id="DeviceADResultMap" type="com.zxwl.web.bean.DeviceAD">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="uploadTime" column="upload_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="effectiveTime" column="effective_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="deviceId" column="device_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="endTime" column="end_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="resourceId" column="resource_id" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'DeviceADResultMap'"/>
+        <bind name="tableName" value="'t_device_ad'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="DeviceADResultMap">
+        select * from t_device_ad where u_id=#{id}
+    </select>
+
+    <select id="selectResourceById" parameterType="string" resultType="com.zxwl.web.bean.Resource">
+        SELECT
+        s_resources.u_id AS resourceId,
+        t_metadata_rel.type AS type,
+        s_resources.md5 AS md5,
+        s_resources.`name` AS `name`
+        FROM
+        t_device_ad
+        JOIN t_metadata_rel ON t_device_ad.resource_id = t_metadata_rel.record_id
+        JOIN s_resources ON t_metadata_rel.data_id = s_resources.u_id
+        WHERE t_device_ad.u_id=#{id}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="DeviceADResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="selectDeviceAD" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="com.zxwl.web.bean.DeviceAD">
+        SELECT
+        t_device_ad.u_id AS id,
+        t_device_ad.effective_time AS effectiveTime,
+        t_metadata_rel.type AS resourceTypeInt,
+        t_device_ad.end_time AS endTime
+        FROM
+        t_device_ad,
+        t_metadata_rel
+        WHERE
+        t_device_ad.resource_id = t_metadata_rel.record_id
+    </select>
+
+    <select id="selectDeviceADPage" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="com.zxwl.web.bean.DeviceAD">
+        SELECT
+        t_device_ad.u_id AS id,
+        t_device_ad.effective_time AS effectiveTime,
+        t_metadata_rel.type AS resourceTypeInt,
+        t_device_ad.end_time AS endTime
+        FROM
+        t_device_ad,
+        t_metadata_rel
+        WHERE
+        t_device_ad.resource_id = t_metadata_rel.record_id
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+
+    <select id="selectADList" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="com.zxwl.web.bean.DeviceAD">
+        SELECT
+        t_device_ad.u_id AS id,
+        t_device_ad.effective_time AS effectiveTime,
+        t_metadata_rel.type AS resourceTypeInt,
+        t_device_ad.end_time AS endTime,
+        s_resources.md5 AS md5
+        FROM
+        t_device_ad
+        JOIN t_metadata_rel ON t_device_ad.resource_id = t_metadata_rel.record_id
+        JOIN s_resources ON t_metadata_rel.data_id = s_resources.u_id
+    </select>
+
+    <select id="selectADListPage" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="com.zxwl.web.bean.DeviceAD">
+        SELECT
+        t_device_ad.u_id AS id,
+        t_device_ad.effective_time AS effectiveTime,
+        t_metadata_rel.type AS resourceTypeInt,
+        t_device_ad.end_time AS endTime,
+        s_resources.md5 AS md5
+        FROM
+        t_device_ad
+        JOIN t_metadata_rel ON t_device_ad.resource_id = t_metadata_rel.record_id
+        JOIN s_resources ON t_metadata_rel.data_id = s_resources.u_id
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+
+    <select id="selectADDist" resultType="com.zxwl.web.bean.DeviceAD">
+        SELECT
+        t.id AS id,
+        t_device_ad.effective_time AS effectiveTime,
+        t_metadata_rel.type AS resourceTypeInt,
+        t_device_ad.end_time AS endTime,
+        t_device_ad.upload_time AS uploadTime,
+        s_resources.md5 AS md5,
+        s_user.username AS userName,
+        t.status AS status
+        FROM
+        t_device_ad
+        JOIN t_metadata_rel ON t_device_ad.resource_id = t_metadata_rel.record_id
+        JOIN s_resources ON t_metadata_rel.data_id = s_resources.u_id
+        JOIN s_user ON t_device_ad.user_id = s_user.u_id
+        JOIN (
+        SELECT
+        t_ad_device.u_id AS id,
+        t_ad_device.device_id AS device_id,
+        t_ad_device.ad_id AS ad_id,
+        t_shop_device.shop_id AS shop_id,
+        t_ad_device.status AS status
+        FROM
+        t_ad_device,
+        t_shop_device
+        WHERE
+        t_ad_device.device_id = t_shop_device.device_id
+        ) AS t ON t.ad_id = t_device_ad.u_id
+        <foreach collection="list" item="item_id" separator=","
+                 open="where t.shop_id in(" close=")">
+            #{item_id}
+        </foreach>
+    </select>
+
+    <select id="selectADDistPage" resultType="com.zxwl.web.bean.DeviceAD">
+        SELECT
+        t.id AS id,
+        t_device_ad.effective_time AS effectiveTime,
+        t_metadata_rel.type AS resourceTypeInt,
+        t_device_ad.end_time AS endTime,
+        t_device_ad.upload_time AS uploadTime,
+        s_resources.md5 AS md5,
+        s_user.username AS userName,
+        t.status AS status
+        FROM
+        t_device_ad
+        JOIN t_metadata_rel ON t_device_ad.resource_id = t_metadata_rel.record_id
+        JOIN s_resources ON t_metadata_rel.data_id = s_resources.u_id
+        JOIN s_user ON t_device_ad.user_id = s_user.u_id
+        JOIN (
+        SELECT
+        t_ad_device.u_id AS id,
+        t_ad_device.device_id AS device_id,
+        t_ad_device.ad_id AS ad_id,
+        t_shop_device.shop_id AS shop_id,
+        t_ad_device.status AS status
+        FROM
+        t_ad_device,
+        t_shop_device
+        WHERE
+        t_ad_device.device_id = t_shop_device.device_id
+        ) AS t ON t.ad_id = t_device_ad.u_id
+        <foreach collection="param3" item="item_id" separator=","
+                 open="where t.shop_id in(" close=")">
+            #{item_id}
+        </foreach>
+        LIMIT #{pageIndex}, #{pageSize}
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

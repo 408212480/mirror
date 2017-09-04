@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.GoodsPercentageMapper">
+    <resultMap id="GoodsPercentageResultMap" type="com.zxwl.web.bean.GoodsPercentage">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="goodsId" column="goods_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="percentage" column="percentage" javaType="float" jdbcType="FLOAT"/>
+            <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+            <result property="status" column="status" javaType="int" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'GoodsPercentageResultMap'"/>
+        <bind name="tableName" value="'t_goods_percentage'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="GoodsPercentageResultMap">
+        select * from t_goods_percentage where u_id=#{id}
+    </select>
+    <!--查询单个视频公开的获利情况-->
+    <select id="getGoodsPricePercentage" parameterType="string" resultType="java.util.HashMap">
+        select tgi.u_id , tgi.price, tgp.percentage,  (tgi.price*tgp.percentage) as total,tgp.goods_id,   t.goodsid  from
+        t_goods_info tgi, t_goods_percentage tgp,
+        (select user_id as userid ,video_id as videoid ,goods_id as goodsid from  t_video_user    where video_id =#{videoId}) t
+        where tgi.u_id = t.goodsid and t.goodsid= tgp.goods_id
+    </select>
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsPercentageResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

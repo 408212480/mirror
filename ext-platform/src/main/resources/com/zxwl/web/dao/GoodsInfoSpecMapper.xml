@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.GoodsInfoSpecMapper">
+    <resultMap id="GoodsInfoSpecResultMap" type="com.zxwl.web.bean.GoodsInfoSpec">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="size" column="size" javaType="String" jdbcType="VARCHAR"/>
+            <result property="color" column="color" javaType="String" jdbcType="VARCHAR"/>
+            <result property="goodsId" column="goods_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="quality" column="quality" javaType="int" jdbcType="INTEGER"/>
+            <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="lastChangeUser" column="last_change_user" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'GoodsInfoSpecResultMap'"/>
+        <bind name="tableName" value="'t_goods_info_spec'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="GoodsInfoSpecResultMap">
+        select * from t_goods_info_spec where u_id=#{id}
+    </select>
+    <select id="selectByGoodsId" parameterType="string" resultType="java.util.HashMap">
+        select size, color, quality, goods_id from t_goods_info_spec where goods_id=#{id}
+    </select>
+
+    <select id="statisticsAllGoodsQuality" parameterType="string" resultType="int">
+        select SUM(quality) AS allQuality from t_goods_info_spec where goods_id=#{goodsId}
+    </select>
+    <select id="goodsColorList" parameterType="string" resultType="java.util.HashMap">
+        SELECT DISTINCT color AS colorList FROM t_goods_info_spec WHERE goods_id=#{goodsId}
+    </select>
+    <select id="goodsSizeList" parameterType="string" resultType="java.util.HashMap">
+        SELECT DISTINCT size AS sizeList FROM t_goods_info_spec WHERE goods_id=#{goodsId}
+    </select>
+
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsInfoSpecResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="selectColorAll" resultType="String">
+        select color from t_goods_info_spec group by color
+    </select>
+
+    <select id="selectSizeAll" resultType="String">
+        select size from t_goods_info_spec group by size
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+    <select id="getShopGoods"  resultType="com.zxwl.web.bean.GoodsInfoSpec">
+        SELECT
+        *
+        FROM
+        t_goods_info_spec
+        WHERE
+        t_goods_info_spec.goods_id IN (
+        SELECT
+        t_shop_goods.goods_id
+        FROM
+        t_shop_goods
+        WHERE
+        t_shop_goods.shop_id = (
+        SELECT
+        t_shop_user.shop_id
+        FROM
+        t_shop_user
+        WHERE
+        t_shop_user.user_id = #{2}
+        )
+        ) limit #{0},#{1}
+    </select>
+
+
+    <select id="selectOne" parameterType="com.zxwl.web.bean.GoodsInfoSpec" resultMap="GoodsInfoSpecResultMap">
+        SELECT
+        *
+        FROM
+        t_goods_info_spec tgis
+        WHERE
+        tgis.goods_id =#{goodsId}
+        AND tgis.color =#{color}
+        AND tgis.size =#{size}
+    </select>
+</mapper>

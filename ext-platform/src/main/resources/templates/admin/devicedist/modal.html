@@ -1,0 +1,29 @@
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dist_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog" style="width: 40%">
+        <div class="modal-content" style="border-radius: 3px">
+            <div class="modal-header" style="height: 10px">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" >&times;</button>
+            </div>
+            <div>
+                <table id="device_dist" class="table table-bordered table-striped" >
+                    <h4 style="text-align: center">选择设备</h4>
+                    <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" name="keeperDeviceGroup-checkable" value="' + data + '" />
+                            <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">全选</label>
+                        </th>
+                        <th>ID</th>
+                        <th>设备编码</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-primary " data-dismiss="modal" style="width: 49%">取消</button>
+                <button type="button" class="btn  btn-primary " data-dismiss="modal" id="dist_commit" style="width: 49%">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>

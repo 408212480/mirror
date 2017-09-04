@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxwl.web.dao.DealPayMapper">
+    <resultMap id="DealPayResultMap" type="com.zxwl.web.bean.DealPay">
+        <id property="id" column="u_id" javaType="string" jdbcType="VARCHAR"/>
+            <result property="orderId" column="order_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="creatorId" column="creator_id" javaType="String" jdbcType="VARCHAR"/>
+            <result property="dealTime" column="deal_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="dealType" column="deal_type" javaType="int" jdbcType="INTEGER"/>
+            <result property="dealMoney" column="deal_money" javaType="java.math.BigDecimal" jdbcType="DECIMAL"/>
+            <result property="gmtCreate" column="gmt_create" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+            <result property="gmtModify" column="gmt_modify" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--用于动态生成sql所需的配置-->
+    <sql id="config">
+        <bind name="resultMapId" value="'DealPayResultMap'"/>
+        <bind name="tableName" value="'t_deal_pay'"/>
+    </sql>
+    <insert id="insert" parameterType="com.zxwl.web.bean.common.InsertParam" >
+        <include refid="config"/>
+        <include refid="BasicMapper.buildInsertSql"/>
+    </insert>
+
+    <delete id="delete" parameterType="com.zxwl.web.bean.common.DeleteParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildDeleteSql"/>
+    </delete>
+
+    <update id="update" parameterType="com.zxwl.web.bean.common.UpdateParam">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildUpdateSql"/>
+    </update>
+
+    <select id="selectByPk" parameterType="string" resultMap="DealPayResultMap">
+        select * from t_deal_pay where u_id=#{id}
+    </select>
+    <select id="getConsume" parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
+        select order_id, deal_money, deal_time, deal_type  from t_deal_pay
+             where
+        deal_type = 1 and creator_id = #{userId} LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="getRecharge" parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
+        select order_id, deal_money, deal_time, deal_type from t_deal_pay
+             where
+        deal_type = 2 or deal_type = 3 and creator_id = #{userId} LIMIT #{pageIndex}, #{pageSize}
+    </select>
+    <select id="totalConsume" parameterType="string" resultType="java.util.HashMap">
+        select order_id, deal_money, deal_time from t_deal_pay where deal_type = 1 and creator_id = #{userId}
+    </select>
+    <select id="totalRecharge" parameterType="string" resultType="java.util.HashMap">
+        select order_id, deal_money, deal_time from t_deal_pay where deal_type = 2 and creator_id = #{userId}
+    </select>
+    <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="DealPayResultMap">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildSelectSql"/>
+    </select>
+
+    <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        <include refid="config"/>
+        <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+</mapper>

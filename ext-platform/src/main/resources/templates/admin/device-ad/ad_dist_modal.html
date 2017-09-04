@@ -1,0 +1,35 @@
+<div class="modal fade" id="ad_dist_modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">选择要发布的广告</h4>
+            </div>
+                <div class="modal-body">
+                    <table id="ad_list" class="table table-bordered table-striped" >
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" name="keeperDeviceGroup-checkable" value="' + data + '" />
+                                <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">全选</label>
+                            </th>
+                            <th>ID</th>
+                            <th>广告类型</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                            <th>视频/图片</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="distSubmit">保存</button>
+                </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal add -->
