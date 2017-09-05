@@ -14,13 +14,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="device_title" class="control-label">设备标题 *</label>
-                                <input type="text" class="form-control" name="role_id" id="device_title" placeholder="请输入设备标题"/>
+                                <input type="text" class="form-control" name="device_title" id="device_title" placeholder="请输入设备标题"/>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="device_order" class="control-label">设备序号 *</label>
-                                <input type="text" class="form-control" name="role_id" id="device_order" placeholder="请输入设备编号"/>
+                                <input type="text" class="form-control" name="device_order" id="device_order" placeholder="请输入设备编号"/>
                             </div>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="device_code" class="control-label">设备编码 *</label>
-                                <input type="text" class="form-control" name="role_name" id="device_code" value="" placeholder="请输入设备编码"/>
+                                <input type="text" class="form-control" name="device_code" id="device_code" value="" placeholder="请输入设备编码（长度不能超过10）"/>
                             </div>
                         </div>
 
@@ -37,11 +37,11 @@
                             <div class="form-group">
                                 <label for="dtp_input1" class="control-label">生产时间</label>
                                 <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input1" data-link-format="yyyy-mm-dd">
-                                    <input class="form-control"  type="text" value="" readonly="readonly" />
+                                    <input class="form-control" id="dtp_input1"  type="text" value="" readonly="readonly" />
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                 </div>
-                                <input type="hidden" id="dtp_input1" value="" /><br/>
+                                <input type="hidden"  value="" /><br/>
                             </div>
                         </div>
                     </div>
@@ -51,22 +51,22 @@
                             <div class="form-group">
                                 <label for="dtp_input2" class="control-label">出厂时间</label>
                                 <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
-                                    <input class="form-control"  type="text" value="" readonly="readonly" />
+                                    <input class="form-control" id="dtp_input2"  type="text" value="" readonly="readonly" />
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                 </div>
-                                <input type="hidden" id="dtp_input2" value="" /><br/>
+                                <input type="hidden"  value="" /><br/>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="dtp_input3" class="control-label">投放时间</label>
                                 <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input3" data-link-format="yyyy-mm-dd">
-                                    <input class="form-control"  type="text" value="" readonly="readonly" />
+                                    <input class="form-control"   id="dtp_input3" type="text" value="" readonly="readonly" />
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                 </div>
-                                <input type="hidden" id="dtp_input3" value="" /><br/>
+                                <input type="hidden" value="" /><br/>
                             </div>
                         </div>
                     </div>
@@ -74,7 +74,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="device_info" class="control-label">备注</label>
-                                <textarea class="form-control" name="role_info" id="device_info" placeholder="请在此输入新增设备相关备注信息"/>
+                                <textarea class="form-control" name="device_info" id="device_info" placeholder="请在此输入新增设备相关备注信息"/>
                             </div>
                         </div>
                     </div>
@@ -107,13 +107,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="e_device_title" class="control-label">设备标题 *</label>
-                                <input type="text" class="form-control" name="role_id" id="e_device_title" placeholder="请输入设备标题"/>
+                                <input type="text" class="form-control" name="e_device_title" id="e_device_title" placeholder="请输入设备标题"/>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="e_device_order" class="control-label">设备序号 *</label>
-                                <input type="text" class="form-control" name="role_id" id="e_device_order" placeholder="请输入设备编号"/>
+                                <input type="text" class="form-control" name="e_device_order" id="e_device_order" placeholder="请输入设备编号"/>
                             </div>
                         </div>
                     </div>
@@ -122,7 +122,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="e_device_code" class="control-label">设备编码 *</label>
-                                <input type="text" class="form-control" name="role_name" id="e_device_code" value="" placeholder="请输入设备编码"/>
+                                <input type="text" class="form-control" name="e_device_code" id="e_device_code" value="" placeholder="请输入设备编码（长度不能超过10）"/>
                             </div>
                         </div>
 
@@ -167,7 +167,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="e_device_info" class="control-label">备注</label>
-                                <textarea class="form-control" name="role_info" id="e_device_info" placeholder="请在此输入新增设备相关备注信息"/>
+                                <textarea class="form-control" name="e_device_info" id="e_device_info" placeholder="请在此输入新增设备相关备注信息"/>
                             </div>
                         </div>
                     </div>

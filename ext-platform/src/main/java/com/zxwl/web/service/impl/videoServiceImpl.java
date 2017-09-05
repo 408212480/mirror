@@ -42,7 +42,7 @@ public class videoServiceImpl extends AbstractServiceImpl<video, String> impleme
     }
 
     @Override
-    public List<video> getVideoByVideoId(String videoId) {
+    public video getVideoByVideoId(String videoId) {
         return getMapper().getVideoByVideoId(videoId);
     }
 

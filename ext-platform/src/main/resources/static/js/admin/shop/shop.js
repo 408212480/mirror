@@ -4,15 +4,23 @@ $(document).ready(function () {
     var shop_list = null;
     var is_add = true;  //记录是否添加图片，如果为false则为编辑图片
     var shop_id = null; //记录店铺id
-    var logoUrl = null; //记录店铺logo 资源id
-    var businessUrl = null; //记录店铺营业执照 资源id
-    var imgUrl = [];    //记录店铺图片 资源id
-    var isInitImg = false;      //店铺图片预览区是否有初始化的图片
+
+    if(typeof String.prototype.startsWith != 'function'){
+        String.prototype.startsWith = function(prefix){
+            return this.slice(0, prefix.length) === prefix;
+        }
+    };
+
+    if(typeof String.prototype.endsWith != 'function'){
+        String.prototype.endsWith = function(suffix){
+            return this.indexOf(suffix, this.length - suffix.length) !== -1;
+        }
+    };
 
     //文件提交框选项设置
     var fileinputoption = {
         required: true,
-        uploadUrl: Request.BASH_PATH + 'file/singleUpload',
+        uploadUrl: Request.BASH_PATH + 'file/shopImgUpload',
         dropZoneTitle: "拖拽文件到这里...",
         language: 'zh', //设置语言
         showUpload: false, //是否显示上传按钮
@@ -31,82 +39,18 @@ $(document).ready(function () {
         uploadAsync: false //同步上传
     };
 
-    $("#business_url").fileinput(fileinputoption).on("fileuploaded filebatchuploadsuccess", function (event, data, previewId, index) {
-        if (data.response.code != '200') {
-            toastr("上传营业执照图片失败，请重试！", opts);
-        }
-        else {
-            businessUrl = data.response.data.id;
-        }
-    });
+    $("#business_url").fileinput(fileinputoption);
 
-    $("#logo").fileinput(fileinputoption).on("fileuploaded filebatchuploadsuccess", function (event, data, previewId, index) {
-        if (data.response.code != '200') {
-            toastr("上传Logo图片失败，请重试！", opts);
-        }
-        else {
-            logoUrl = data.response.data.id;
-        }
-    });
+    $("#logo").fileinput(fileinputoption);
 
     fileinputoption["maxFileCount"] = 3;
-    $("#img1").fileinput(fileinputoption).on("fileuploaded filebatchuploadsuccess", function (event, data, previewId, index) {
-        if (data.response.code != '200') {
-            toastr("上传Logo图片失败，请重试！", opts);
-        }
-        else {
-            if(imgUrl.length == 3){
-                imgUrl = [];
-            }
-            imgUrl.push({"u_id": data.response.data.id, "KeyID": previewId});
-        }
-    });
+    $("#img1").fileinput(fileinputoption);
 
     $('input#img1').on('filebatchselected', function(event){
-        if(isInitImg){
-            imgUrl = [];
-        }
         //如果选择的图片大于3张，则清空图片预览区
         if($('input#img1').fileinput('getFilesCount') > 3){
             $('input#img1').fileinput('clear');
-            imgUrl = [];
             toastr.info("店铺图片不能多于3张", opts);
-        }
-        isInitImg = false;
-    });
-
-    //图片上传后删除事件
-    $("#logo").on("filesuccessremove", function (event, id, index) {
-        var url = 'shop/img/' + logoUrl;
-        Request.delete(url, null, function (e) {
-            if (!e.success) {
-                toastr.error(e.message);
-            }
-        });
-        logoUrl = null;
-    });
-
-    $("#business_url").on("filesuccessremove", function (event, id, index) {
-        var url = 'shop/img/' + businessUrl;
-        Request.delete(url, null, function (e) {
-            if (!e.success) {
-                toastr.error(e.message);
-            }
-        });
-        businessUrl = null;
-    });
-
-    $("#img1").on("filesuccessremove", function (event, id, index) {
-        for(var i = 0; i < imgUrl.length; i ++){
-            if(imgUrl[i].KeyID == id){
-                var url = 'shop/img/' + imgUrl[i].u_id;
-                Request.delete(url, null, function (e) {
-                    if (!e.success) {
-                        toastr.error(e.message);
-                    }
-                });
-                imgUrl.splice(i, 1)
-            }
         }
     });
 
@@ -170,7 +114,6 @@ $(document).ready(function () {
                     });
                 },
                 columns: [
-                    // {"data": "num"},
                     {
                         data: "id",
                         bSortable: false,
@@ -355,6 +298,11 @@ $(document).ready(function () {
             address: {required: "详细地址不能为空."}
         },
         submitHandler: function (form) {
+
+            var logoUrl = null; //记录店铺logo 资源id
+            var businessUrl = null; //记录店铺营业执照 资源id
+            var imgUrl = [];    //记录店铺图片 资源id
+
             var btn = $('#submitBtn');
 
             btn.attr('disabled', "true");
@@ -362,6 +310,36 @@ $(document).ready(function () {
             var selected = $('#area_tree').treeview('getSelected');
             //同步富文本编辑器，才能取得富文本编辑器内地内容
             editor.sync();
+
+            //获取logo资源id
+            var logoSrc = $('#logo-div .kv-preview-thumb .file-preview-image');
+            if(logoSrc && logoSrc.length > 0){
+                for(var i = 0; i < logoSrc.length; i++){
+                    if(logoSrc[i].getAttribute('src').startsWith('/file/image/')){
+                        logoUrl = logoSrc[i].getAttribute('src').slice(12, 18);
+                        break;
+                    }
+                }
+            }
+
+            var businessSrc = $('#business-div .kv-preview-thumb .file-preview-image');
+            if(businessSrc && businessSrc.length > 0){
+                for(var i = 0; i < businessSrc.length; i++){
+                    if(businessSrc[i].getAttribute('src').startsWith('/file/image/')){
+                        businessUrl = businessSrc[i].getAttribute('src').slice(12, 18);
+                        break;
+                    }
+                }
+            }
+
+            var imgSrc = $('#shop-img-div .kv-preview-thumb .file-preview-image');
+            if(imgSrc && imgSrc.length > 0){
+                for(var i = 0; i < imgSrc.length; i++){
+                    if(imgSrc[i].getAttribute('src').startsWith('/file/image/')){
+                        imgUrl.push(imgSrc[i].getAttribute('src').slice(12, 18));
+                    }
+                }
+            }
 
             var params = {
                 shopName: $("#shop_name").val(),
@@ -371,7 +349,7 @@ $(document).ready(function () {
                 legalName: $("#legal_name").val(),
                 businessUrl: businessUrl,
                 address: $("#address").val(),
-                img1: imgUrl[0]["u_id"],
+                img1: imgUrl[0],
                 img2: null,
                 img3: null,
                 areaId: selected[0].id,
@@ -383,10 +361,10 @@ $(document).ready(function () {
             }
 
             if (imgUrl.length >= 2) {
-                params.img2 = imgUrl[1]["u_id"];
+                params.img2 = imgUrl[1];
             }
             if (imgUrl.length >= 3) {
-                params.img3 = imgUrl[2]["u_id"];
+                params.img3 = imgUrl[2];
             }
 
             var req = is_add ? Request.post : Request.put;
@@ -396,9 +374,6 @@ $(document).ready(function () {
                     toastr.info("保存完毕", opts);
                     $("#modal-add").modal('hide');
                     shop_list.draw();
-                    logoUrl = null;
-                    businessUrl = null;
-                    imgUrl = [];
                     window.editor.html('');
                 } else {
                     toastr.error("保存失败", opts)
@@ -457,7 +432,6 @@ $(document).ready(function () {
                             key: 1}]
                     });
                 }
-                logoUrl = data.data['logo'];
 
                 $("input#business_url").fileinput('clear');
                 if (data.data['businessUrl'] != null && data.data['businessUrl'] != '') {
@@ -469,42 +443,32 @@ $(document).ready(function () {
                                                                         }]
                                                                     });
                 }
-                businessUrl = data.data['businessUrl'];
 
-                imgUrl = [];
                 var initialPreview = [];
                 var initialPreviewConfig = [];
                 $('#img1').fileinput('clear');
                 if (data.data['img1'] != null && data.data['img1'] != '') {
                     initialPreview.push("/file/image/" + data.data['img1']);
-                    imgUrl.push({"u_id": data.data['img1'], "KeyID": 100});
                     initialPreviewConfig.push({
                             width: '160px',
                             url: '/shop/img/delete',
-                            key: 100,
-                            extra: function() {
-                                    imgUrl.splice(0,1);}
+                            key: 100
                     });
                 }
                 if (data.data['img2'] != null && data.data['img2'] != '') {
                     initialPreview.push("/file/image/" + data.data['img2']);
-                    imgUrl.push({"u_id": data.data['img2'], "KeyID": 101});
                     initialPreviewConfig.push({
                         width: '160px',
                         url: '/shop/img/delete',
-                        key: 101,
-                        extra: function() {
-                            imgUrl.splice(1,1);}
+                        key: 101
                     });
                 }
                 if (data.data['img3'] != null && data.data['img3'] != '') {
                     initialPreview.push("/file/image/" + data.data['img3']);
-                    imgUrl.push({"u_id": data.data['img3'], "KeyID": 102});
                     initialPreviewConfig.push({
                         width: '160px',
                         url: '/shop/img/delete',
-                        key: 102,
-                        extra: function() {imgUrl.splice(2,1);}
+                        key: 102
                     });
                 }
                 if (initialPreview.length != 0) {     //判断店铺图片是否为空
@@ -535,7 +499,7 @@ $(document).ready(function () {
 
             }
             else {       //根据店铺id请求店铺数据失败
-                toastr.warn("数据加载失败，请重试");
+                toastr.warning("数据加载失败，请重试");
             }
         });
     };
@@ -543,7 +507,6 @@ $(document).ready(function () {
     //编辑店铺
     $("#shop_list").off('click', '.btn-edit').on('click', '.btn-edit', function () {
         initEditorPage($(this), '编辑店铺');
-        isInitImg = true;
     });
 
     //店铺详情

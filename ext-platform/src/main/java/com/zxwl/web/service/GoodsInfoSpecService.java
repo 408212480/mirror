@@ -1,6 +1,7 @@
 package com.zxwl.web.service;
 
 import com.zxwl.web.bean.GoodsInfoSpec;
+import com.zxwl.web.bean.common.PagerResult;
 import com.zxwl.web.bean.common.QueryParam;
 import com.zxwl.web.service.GenericService;
 
@@ -40,4 +41,5 @@ List<GoodsInfoSpec> getShopGoods(QueryParam param);
      */
     List<Map> goodsSizeList(String goodsId);
     GoodsInfoSpec selectOne(GoodsInfoSpec goodsInfoSpec);
+    PagerResult<GoodsInfoSpec> selectList(QueryParam param);
 }

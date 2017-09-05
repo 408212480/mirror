@@ -1,8 +1,10 @@
 package com.zxwl.web.service.impl;
 
+import com.zxwl.web.bean.UserAccount;
 import com.zxwl.web.bean.common.PagerResult;
 import com.zxwl.web.bean.common.QueryParam;
 import com.zxwl.web.service.QueryService;
+import com.zxwl.web.service.UserAccountService;
 import com.zxwl.web.util.ResourceUtil;
 import org.hsweb.commons.MD5;
 import com.zxwl.pay.common.util.str.StringUtils;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +36,8 @@ public class UserInfoServiceImpl extends AbstractServiceImpl<UserInfo, String> i
     protected UserInfoMapper userInfoMapper;
     @Resource
     private UserService userService;
+    @Resource
+    private UserAccountService userAccountService;
 
     @Override
     protected UserInfoMapper getMapper() {
@@ -43,6 +49,14 @@ public class UserInfoServiceImpl extends AbstractServiceImpl<UserInfo, String> i
         UpdateService.createUpdate(getMapper()).set(UserInfo.Property.defaultAddress, defaultAddress).where(UserInfo.Property.userId, userId).exec();
     }
 
+
+    /**
+     * 客户端用户初始化创建账户服务类
+     *
+     * 2017-09-05 修正增加插入 t_user_account 表
+     * @param user
+     * @return
+     */
     @Transactional
     @Override
     public String insertApiUser(User user) {
@@ -54,11 +68,21 @@ public class UserInfoServiceImpl extends AbstractServiceImpl<UserInfo, String> i
         }
 
         String userId = userService.insert(user);
+        // 插入 t_user_info 表
         UserInfo apiUser = new UserInfo();
         apiUser.setUserId(userId);
         apiUser.setId(GenericPo.createUID());
         apiUser.setTelephone(user.getPhone());
         apiUser.setName("用户" + user.getPhone());
+
+        // 插入 t_user_account 表
+        UserAccount account = new UserAccount();
+        account.setBalance(new BigDecimal(0.00));
+        account.setUserId(userId);
+        account.setGmtCreate(new Date());
+        account.setGmtModify(new Date());
+        userAccountService.insert(account);
+
         return insert(apiUser);
     }
 

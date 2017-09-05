@@ -94,9 +94,9 @@
     </select>
 
     <select id="videoImgUrl" parameterType="string" resultType="java.util.HashMap">
-        SELECT sr.path, sr.md5, sr.u_id,tmr.type ,tmr.data_id
-        FROM t_metadata_rel tmr, s_resources sr WHERE  sr.u_id=tmr.data_id AND
-        tmr.data_id IN (SELECT data_id FROM t_metadata_rel WHERE record_id IN (SELECT tv.video_url FROM t_video tv  WHERE  tv.u_id =#{videoId} ))
+        SELECT sr.path, sr.md5, sr.u_id,t.type , t.data_type, t.data_id
+        FROM  s_resources sr, (SELECT data_id , record_id, type, data_type  FROM t_metadata_rel WHERE record_id IN (
+        SELECT tv.video_url FROM t_video tv  WHERE  tv.u_id =#{videoId} ) ) t WHERE t.data_id = sr.u_id
     </select>
 
 

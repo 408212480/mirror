@@ -424,4 +424,43 @@ public class FileController {
         return result;
     }
 
+    /**
+     * @author wuwei
+     * @date 2017.9.4 10:59
+     * 店铺图片，logo和营业执照图片上传接口
+     *
+     *
+     */
+    @RequestMapping(value = "/shopImgUpload", method = RequestMethod.POST)
+    @AccessLogger("上传店铺图片")
+    public Map<String, Object> imgUpload(@RequestParam("file") MultipartFile file) throws IOException {
+        if (logger.isInfoEnabled())
+            logger.info("start upload.");
+        // List<Resources> resourcesList = new LinkedList<>();
+        Resources resources = null;
+        HashMap<String,Object> result = new HashMap<>();
+        if (!file.isEmpty()) {
+            if (logger.isInfoEnabled())
+                logger.info("start write file:{}", file.getOriginalFilename());
+            String fileName = file.getOriginalFilename();
+            resources = fileService.saveFile(file.getInputStream(), fileName);
+            String error = "";
+//            String[] initialPreview = {"<img src='/file/image/"+resources.getId()+".jpg' class='file-preview-image' data='"+resources.getId()+"' alt='Desert' title='Desert'>"};
+            String[] initialPreview = {"/file/image/"+resources.getId()+".jpg"};
+            HashMap<String, String> initialPreviewConfig = new HashMap<>();
+            initialPreviewConfig.put("caption", resources.getName());
+            initialPreviewConfig.put("url", "/shop/img/delete");
+            initialPreviewConfig.put("key", resources.getId());
+            result.put("error", error);
+            result.put("initialPreview", initialPreview);
+            result.put("initialPreviewConfig", new HashMap[]{initialPreviewConfig});
+        }
+        else{
+            String error = "图片为空或数据加载失败，请重试！";
+        }
+
+        //响应上传成功的资源信息
+        return result;
+    }
+
 }

@@ -3,11 +3,12 @@ $(document).ready(function () {
     var inited = false;
     var area_list = [];
     var device_list = null;
+    var shopId = null;
+    var device_dist_List = null;
 
     var initAreaTree = function () {
         Request.get("area?paging=false&sorts[0].name=sortIndex", function (e) {
             area_list = e;
-            console.log(e);
             Request.get("shop?paging=false", function (e) {
                 for (var i = 0; i < e.length; i++) {
                     e[i].parentId = e[i]['areaId'];
@@ -122,8 +123,6 @@ $(document).ready(function () {
                 dataType: "json",
                 success: function (result) {
 
-                    console.log(result);
-
                     var resultData = {};
                     resultData.draw = data.draw;
                     resultData.recordsTotal = result.total;
@@ -207,6 +206,7 @@ $(document).ready(function () {
     $(".box-tools").off('click', '.btn-dist').on('click', '.btn-dist', function () {
         var shop = $('#area_tree').treeview('getSelected', null)[0];
         if (shop != undefined && shop['is_shop']) {
+            shopId = shop['id'];
             loadDeviceDist(shop['id']);
             $("#dist_modal").modal('show');
             $(".group-checkable").prop('checked',false);
@@ -250,104 +250,109 @@ $(document).ready(function () {
     //get use data list
     var loadDeviceDist = function (shopId) {
         // 加载使用列表数据
-        var device_dist_List = $('#device_dist').DataTable({
-            "language": lang,
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "bStateSave": true,
-            "serverSide": true,
-            "sPaginationType": "full_numbers",
-            "retrieve": true,
-            "ajax": function (data, callback, settings) {
-                var param = {
-                    shopId: shopId,
-                    pageSize: data.length,
-                    pageIndex: data.start,
-                    page: (data.start / data.length) + 1
-                };
-                $.ajax({
-                    url: BASE_PATH + "devicedist/undist",
-                    type: "GET",
-                    cache: false,
-                    data: param,
-                    dataType: "json",
-                    success: function (result) {
-                        var resultData = {};
-                        resultData.draw = data.draw;
-                        resultData.recordsTotal = result.total;
-                        resultData.recordsFiltered = result.total;
-                        resultData.data = result.data;
-                        pageIndex = param.pageIndex;
-                        callback(resultData);
-                    },
-                    error: function (jqXhr) {
-                        toastr.warning("请求列表数据失败, 请重试");
-                    }
-                });
-            },
-            columns: [
-                CONSTANT.DATA_TABLES.COLUMN.CHECKBOX,
-                {
-                    data: "id",
-                    bSortable: false,
-                    targets: 0,
-                    width: "30%",
-                    render: function (data, type, row, meta) {
-                        // 显示行号
-                        var startIndex = meta.settings._iDisplayStart;
-                        return startIndex + meta.row + 1;
-                    }
+        if(device_dist_List == null){
+            device_dist_List = $('#device_dist').DataTable({
+                "language": lang,
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "bStateSave": true,
+                "serverSide": true,
+                "sPaginationType": "full_numbers",
+                "retrieve": true,
+                "ajax": function (data, callback, settings) {
+                    var param = {
+                        shopId: shopId,
+                        pageSize: data.length,
+                        pageIndex: data.start,
+                        page: (data.start / data.length) + 1
+                    };
+                    $.ajax({
+                        url: BASE_PATH + "devicedist/undist",
+                        type: "GET",
+                        cache: false,
+                        data: param,
+                        dataType: "json",
+                        success: function (result) {
+                            var resultData = {};
+                            resultData.draw = data.draw;
+                            resultData.recordsTotal = result.total;
+                            resultData.recordsFiltered = result.total;
+                            resultData.data = result.data;
+                            pageIndex = param.pageIndex;
+                            callback(resultData);
+                        },
+                        error: function (jqXhr) {
+                            toastr.warning("请求列表数据失败, 请重试");
+                        }
+                    });
                 },
-                {data: "code"}
-            ],
-            drawCallback: function () {
-                // 取消全选
-                $(":checkbox[name='keeperDeviceGroup-checkable']").prop('checked', false);
-            }
-        });
-
-
-        $('#dist_modal').on("change", ":checkbox", function () {
-            // 列表复选框
-            if ($(this).is("[name='keeperDeviceGroup-checkable']")) {
-                // 全选
-                $(":checkbox", '#device_dist').prop("checked", $(this).prop("checked"));
-            } else {
-                // 一般复选
-                var checkbox = $("tbody :checkbox", '#device_dist');
-                $(":checkbox[name='cb-check-all']", '#device_dist').prop('checked', checkbox.length == checkbox.filter(':checked').length);
-            }
-        });
-
-        //处理分配确定按钮
-        $("#dist_modal").off('click', '#dist_commit').on('click', '#dist_commit', function () {
-            var deviceIds = [];
-            var deviceList = $(".group-checkable");
-            for (var i = 0; i < deviceList.length; i++) {
-                if (deviceList[i]['checked'] == true) {
-                    deviceIds.push(deviceList[i].dataset['id']);
+                columns: [
+                    CONSTANT.DATA_TABLES.COLUMN.CHECKBOX,
+                    {
+                        data: "id",
+                        bSortable: false,
+                        targets: 0,
+                        width: "30%",
+                        render: function (data, type, row, meta) {
+                            // 显示行号
+                            var startIndex = meta.settings._iDisplayStart;
+                            return startIndex + meta.row + 1;
+                        }
+                    },
+                    {data: "code"}
+                ],
+                drawCallback: function () {
+                    // 取消全选
+                    $(":checkbox[name='keeperDeviceGroup-checkable']").prop('checked', false);
                 }
-            }
-            deviceIds.push(shopId);
-            var url = "devicedist/all";
+            });
 
-            Request.post(url, deviceIds, function (e) {
-                if (e.success) {
-                    toastr.info("保存完毕", opts);
-                    $("#dist_modal").modal('hide');
-                    device_list.draw();
+
+            $('#dist_modal').on("change", ":checkbox", function () {
+                // 列表复选框
+                if ($(this).is("[name='keeperDeviceGroup-checkable']")) {
+                    // 全选
+                    $(":checkbox", '#device_dist').prop("checked", $(this).prop("checked"));
                 } else {
-                    toastr.error("保存失败", opts)
+                    // 一般复选
+                    var checkbox = $("tbody :checkbox", '#device_dist');
+                    $(":checkbox[name='cb-check-all']", '#device_dist').prop('checked', checkbox.length == checkbox.filter(':checked').length);
                 }
-                $("#dist_commit").html("保存");
-                $("#dist_commit").removeAttr('disabled');
-            } );
+            });
 
-        });
+            //处理分配确定按钮
+            $("#dist_modal").off('click', '#dist_commit').on('click', '#dist_commit', function () {
+                var deviceIds = [];
+                var deviceList = $(".group-checkable");
+                for (var i = 0; i < deviceList.length; i++) {
+                    if (deviceList[i]['checked'] == true) {
+                        deviceIds.push(deviceList[i].dataset['id']);
+                    }
+                }
+                deviceIds.push(shopId);
+                var url = "devicedist/all";
+
+                Request.post(url, deviceIds, function (e) {
+                    if (e.success) {
+                        toastr.info("保存完毕", opts);
+                        $("#dist_modal").modal('hide');
+                        device_list.draw();
+                    } else {
+                        toastr.error("保存失败", opts)
+                    }
+                    $("#dist_commit").html("保存");
+                    $("#dist_commit").removeAttr('disabled');
+                } );
+
+            });
+        }
+        else{
+            device_dist_List.draw();
+        }
     };
 
     var CONSTANT = {

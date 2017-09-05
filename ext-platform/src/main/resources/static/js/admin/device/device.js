@@ -44,20 +44,37 @@ $(document).ready(function () {
     });
 
     // 事件绑定结束
+    //点击新增数据
+    $(document).off('click','.btn-add-data').on('click', '.btn-add-data', function () {
+        $("input#device_title").val("");
+        $("input#device_order").val("");
+        $("input#device_code").val("");
+        $("input#dtp_input1").val("");
+        $("input#dtp_input2").val("");
+        $("input#dtp_input3").val("");
+        $("input#device_info").val("");
+
+        $("#modal-add").modal('show');
+
+    });
 
     // 新增
     $("form#add_form").validate({
-        // rules: {
-        //     role_name: {required: true},
-        //     role_id: {required: true}
-        // },
-        // messages: {
-        //     role_name: {required: "请输入设备编码."},
-        //     role_id: {required: "请输入设备序号"}
-        // },
+        rules: {
+            device_title: {required: true},
+            device_order: {required: true},
+            device_code:{required: true}
+        },
+        messages: {
+            device_title: {required: "设备标题不能为空"},
+            device_order: {required: "设备序号不能为空"},
+            device_code: {required: "设备编码不能为空"}
+        },
+
         submitHandler: function (form) {
+
             var btn = $('button[type="submit"]');
-            btn.attr('disabled',"true");
+            btn.attr('disabled',"true")
 
             var params = {
                 modules: [],
@@ -70,7 +87,6 @@ $(document).ready(function () {
                 remark: $(form).find("#device_info").val(),
                 type: ""
             };
-
             params.modules = getCheckedActions('add_form');
 
             // 发送新增请求
@@ -84,7 +100,10 @@ $(document).ready(function () {
                     // 列表重载
                     roleList.ajax.reload();
                 } else {
-                    toastr.error("新增失败", opts);
+                    toastr.error("新增失败,设备编码不能超过10位，设备序号不能超过32位！！", opts);
+                    // 移除保存按钮的禁用状态
+                    btn.removeAttr('disabled');
+                    // location.reload();
                 }
             });
 
@@ -94,12 +113,16 @@ $(document).ready(function () {
 
     // 修改
     $("form#edit_form").validate({
-        // rules: {
-        //     e_device_title: {required: true}
-        // },
-        // messages: {
-        //     e_device_title: {required: "请输入标题."},
-        // },
+        rules: {
+            e_device_title: {required: true},
+            e_device_order: {required: true},
+            e_device_code:{required: true}
+        },
+        messages: {
+            e_device_title: {required: "设备标题不能为空"},
+            e_device_order: {required: "设备序号不能为空"},
+            e_device_code: {required: "设备编码不能为空"}
+        },
         submitHandler: function (form) {
             var btn = $('button[type="submit"]');
             btn.attr('disabled',"true");
@@ -218,6 +241,14 @@ $(document).ready(function () {
         ],
         "aoColumnDefs": [
             {
+                "sClass": "center",
+                "aTargets": [0],
+                "mData": "id",
+                "mRender": function (a, b, c, d) {
+                    return d.row;
+                }
+            },
+            {
                 "sClass":"center operate-group",
                 "aTargets":[8],
                 "mData":"id",
@@ -279,6 +310,9 @@ $(document).ready(function () {
         loadUserList(data_identify);
 
     });
+
+
+
     $(document).off('click','.btn-use-history-close').on('click', '.btn-use-history-close', function () {
         location.reload();
         // roleList.ajax.reload();

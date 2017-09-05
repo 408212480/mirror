@@ -24,8 +24,8 @@
                     <div class="box-tools pull-right">
                         <!-- 判断是否有新增权限 -->
                         <button th:if="${user.hasAccessModuleAction('device', 'C')}" type="button"
-                                class="btn btn-block btn-primary btn-sm btn-add" data-toggle="modal"
-                                data-target="#modal-add">新增
+                                class="btn btn-block btn-primary btn-sm btn-add btn-add-data" data-toggle="modal"
+                                data-target="#modal-adds">新增
                         </button>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                     <table id="role_list" class="table table-bordered table-striped table_test">
                         <thead id="table_header">
                         <tr>
-                            <th>ID</th>
+                            <th>序号</th>
                             <th>设备标题</th>
                             <th>设备序号</th>
                             <th>设备编码</th>

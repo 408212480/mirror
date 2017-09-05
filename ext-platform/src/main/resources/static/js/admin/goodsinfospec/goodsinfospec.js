@@ -9,7 +9,6 @@ $(document).ready(function () {
         dataType: "json",
         success: function (result) {
             var device_fid_list = "";
-
             $.each(result.data, function (i, e) {
                 device_fid_list += "<tr><td>" + e.id + "</td>" + "<td>" + e.devCode + "</td></tr>"
                 device_fid_detail_list += "<tr><td><input type='checkbox'  class='checkchild' data-value='" + e.id + "'></td><td>" + e.id + "</td><td>" + e.devNum + "</td><td>" + e.devCode + "</td></tr>"

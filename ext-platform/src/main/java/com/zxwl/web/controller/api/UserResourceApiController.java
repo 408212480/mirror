@@ -70,18 +70,31 @@ public class UserResourceApiController extends GenericController<Resources, Stri
     @AccessLogger("获取视频相关信息")
     public ResponseMessage videoList(@PathVariable("videoId") String videoId, HttpServletRequest req) {
         VideoDetailPage videoDetailPage = new VideoDetailPage();
-
+//        String type = ".MP4";
         Map videoDetail = resourcesService.videoDetail(videoId, WebUtil.getLoginUser().getId());
         if (videoDetail != null && videoDetail.get("userimgurl") != null) {
             videoDetail.put("userimgurl", resourcesService.selectSingleImage(WebUtil.getBasePath(req), String.valueOf(videoDetail.get("userimgurl")).trim()));
+
         }
+//        if (!StringUtils.isEmpty(String.valueOf(videoDetail.get("video_id")))) {
+//            videoDetail.put("video_id", ResourceUtil.resourceBuildPath(req, String.valueOf(videoDetail.get("video_id")).trim(), type));
+//        }
         videoDetailPage.setVideoDetail(videoDetail);
         List<Map> videoImgUrl = resourcesService.videoImgUrl(videoId);
+        logger.info("data default: {}", videoImgUrl);
         if (videoImgUrl != null) {
+
             for (Map map : videoImgUrl) {
-                map.put("md5", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("md5")).trim()));
+                int videoType = Integer.parseInt(String.valueOf(map.get("type")));
+                if (videoType == 0) {
+                    map.put("md5", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("md5")).trim()));
+                }else {
+                    map.put("md5", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("md5")).trim(), ".mp4"));
+
+                }
             }
         }
+        logger.info("data: {}", videoImgUrl);
         videoDetailPage.setVideoImgUrl(videoImgUrl);
         videoDetailPage.setMoney(goodsPercentageService.getGoodsPricePercentage(videoId));
         return ok(videoDetailPage);
@@ -115,7 +128,7 @@ public class UserResourceApiController extends GenericController<Resources, Stri
     @RequestMapping(value = "/pagerallVideoList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @AccessLogger("发现页面分页展示视频列表")
     public ResponseMessage allVideoList(QueryParam queryParam, HttpServletRequest req) {
-        PagerParamApi pagerParamApi =new PagerParamApi();
+        PagerParamApi pagerParamApi = new PagerParamApi();
         pagerParamApi.setUserId(WebUtil.getLoginUser().getId());
         pagerParamApi.setPageSize(queryParam.getPageSize());
         pagerParamApi.setPageIndex(queryParam.getPageIndex());
@@ -329,12 +342,11 @@ public class UserResourceApiController extends GenericController<Resources, Stri
      * @author wuei
      * @date 2017.8.28 14:54
      * 根据时间查询视频信息
-     *
      */
     @RequestMapping(value = "/getVideoByDate/{date}", method = RequestMethod.GET)
     @AccessLogger("查询对应时间内的视频信息")
     @Authorize(action = "R")
-    public ResponseMessage getVideoByDate(@PathVariable("date") String date, QueryParam param, HttpServletRequest req){
+    public ResponseMessage getVideoByDate(@PathVariable("date") String date, QueryParam param, HttpServletRequest req) {
         PagerResult<HashMap<String, String>> result = null;
         try {
             result = videoService.getVideoByUploadTimePager(date, param, req);

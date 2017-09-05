@@ -68,7 +68,7 @@
         <include refid="config"/>
         <include refid="BasicMapper.buildTotalSql"/>
     </select>
-    <select id="getShopGoods"  resultType="com.zxwl.web.bean.GoodsInfoSpec">
+    <select id="getShopGoods"  resultMap="GoodsInfoSpecResultMap">
         SELECT
         *
         FROM
@@ -101,5 +101,12 @@
         tgis.goods_id =#{goodsId}
         AND tgis.color =#{color}
         AND tgis.size =#{size}
+    </select>
+
+
+    <select id="selectList" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsInfoSpecResultMap">
+        SELECT t.* FROM t_goods_info_spec t
+        where  t.goods_id = #{param.goods_id}
+        limit #{pageIndex}, #{pageSize}
     </select>
 </mapper>

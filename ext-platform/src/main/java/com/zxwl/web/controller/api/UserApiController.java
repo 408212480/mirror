@@ -194,6 +194,8 @@ public class UserApiController extends GenericController<User, String> {
             user.setPhone(telephone);
 
             userInfoService.insertApiUser(user);
+
+
             data.put("password", password);
         } else {
             data.put("password", user.getPassword());

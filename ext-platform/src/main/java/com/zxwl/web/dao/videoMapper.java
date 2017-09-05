@@ -16,7 +16,7 @@ public interface videoMapper extends GenericMapper<video, String> {
 
     List<video> ListPager(QueryParam param);
 
-    List<video> getVideoByVideoId(String videoId);
+    video getVideoByVideoId(String videoId);
 
     List<Map> selectVideoImgByVideoId(String videoId);
 

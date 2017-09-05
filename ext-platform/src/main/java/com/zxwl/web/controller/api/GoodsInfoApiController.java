@@ -55,6 +55,8 @@ public class GoodsInfoApiController extends GenericController<UserAccount, Strin
     private ShopDecorationService shopDecorationService;
     @Resource
     private GoodsInfoSpecService goodsInfoSpecService;
+    @Resource
+    private GoodsOrderService goodsOrderService;
 
     @Override
     public UserAccountService getService() {
@@ -159,6 +161,12 @@ public class GoodsInfoApiController extends GenericController<UserAccount, Strin
                         resourceAssociationService.insert(resourceAssociation);
                     }
                 }
+                //更新订单状态
+                GoodsOrder goodsOrder=goodsOrderService.selectByPk(goodsComment.getOrderId());
+                if (goodsOrder==null)
+                    return ResponseMessage.error("order not found");
+                goodsOrder.setOrderStatus(GoodsOrder.order_closed);
+                goodsOrderService.update(goodsOrder);
                 return ok(cuId);
             }
         } else {

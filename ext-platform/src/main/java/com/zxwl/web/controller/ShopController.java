@@ -257,7 +257,10 @@ public class ShopController extends GenericController<Shop, String> {
     private void deleteResources(String id) {
         ArrayList<MetaDataRel> rels = (ArrayList) metaDataRelService.selectByDataId(id);
         if (rels == null || rels.size() == 0 ) {
-            resourcesService.delete(id);
+            Resources resources = resourcesService.selectByPk(id);
+            if(resources != null){
+                resourcesService.delete(id);
+            }
         }
     }
 
@@ -423,6 +426,7 @@ public class ShopController extends GenericController<Shop, String> {
     }
 
     /**
+     * @author wuei
      * 用于接收fileinput插件的删除图片消息，对于编辑店铺时，如果删除图片，则不做任何动作，返回删除成功，编辑店铺完成点击保存后再从数据库中删除图片
      * @param
      * @return

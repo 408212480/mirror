@@ -113,4 +113,20 @@ public class GoodsInfoSpecController extends GenericController<GoodsInfoSpec, St
             return ResponseMessage.error(e.getMessage());
         }
     }
+
+
+    @RequestMapping(value = "/specList/{goodsId}",method = RequestMethod.GET)
+    @AccessLogger("根据商品id查询规格列表")
+    public ResponseMessage specList(@PathVariable("goodsId")String goodsId, QueryParam param){
+        param.getParam().put("goods_id", goodsId);
+        // 获取条件查询
+        Object data;
+        if (!param.isPaging())//不分页
+            data = getService().select(param);
+        else
+            data = getService().selectList(param);
+        return ok(data)
+                .include(getPOType(), param.getIncludes())
+                .exclude(getPOType(), param.getExcludes());
+    }
 }

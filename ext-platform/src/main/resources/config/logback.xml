@@ -8,14 +8,14 @@
         </encoder>
     </appender>
     <logger name="org.springframework" level="ERROR" />
-    <logger name="org.springframework.web" level="DEBUG" />
+    <logger name="org.springframework.web" level="ERROR" />
     <logger name="org.apache.tomcat" level="ERROR" />
-    <logger name="com.zxwl" level="DEBUG" />
+    <logger name="com.zxwl" level="INFO" />
     <logger name="com.atomikos" level="ERROR" />
     <logger name="org.activiti" level="ERROR" />
     <logger name="org.apache.commons.beanutils.PropertyUtils" level="OFF" />
     <logger name="org.activiti.engine.impl" level="DEBUG" />
-    <root level="ERROR">
+    <root level="INFO">
         <appender-ref ref="Console"/>
     </root>
 </configuration>

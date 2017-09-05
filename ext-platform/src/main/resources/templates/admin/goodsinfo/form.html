@@ -239,3 +239,142 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal add -->
+
+<div class="modal fade" id="modal-classinfo">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">该规格列表</h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body">
+                    <div class="box-body">
+                        <div class="row">
+                            <a href="javascript:;" class="pull-right text-primary" id="btn-class-new" data-gid=""><i class="fa fa-plus"></i> 新增</a>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="class_list_table" class="table table-bordered table-hover dataTable" role="grid" aria-describedby="example2_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">ID</th>
+                                        <th class="sorting" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">尺码</th>
+                                        <th class="sorting" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">颜色</th>
+                                        <th class="sorting" tabindex="0" aria-controls="class_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-block btn-success" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-class-modify">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">编辑规格</h4>
+            </div>
+            <form class="form-horizontal" id="class-form" name="class-form" method="post" data-type="0" data-id="">
+                <div class="modal-body">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">尺码：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="input_class_size" name="input_class_size" value=""/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">颜色：</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="input_class_color" name="input_class_color" value="" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">数量：</label>
+                                <div class="col-sm-8">
+                                    <input type="number" class="form-control" id="input_class_quality" name="input_class_quality" value=""/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<!-- comment list -->
+<div class="modal fade" id="modal-comment-box">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">该商品评论</h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="modal-body">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="comment_list_table" class="table table-bordered table-hover dataTable" role="grid" aria-describedby="example2_info">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="comment_list_table" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">ID</th>
+                                        <th class="sorting" tabindex="0" aria-controls="comment_list_table" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">评价账号</th>
+                                        <th class="sorting" tabindex="0" aria-controls="comment_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">星级</th>
+                                        <th class="sorting" tabindex="0" aria-controls="comment_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">评价内容</th>
+                                        <th class="sorting" tabindex="0" aria-controls="comment_list_table" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">时间</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-block btn-success" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

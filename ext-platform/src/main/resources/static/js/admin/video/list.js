@@ -98,7 +98,6 @@ $(document).ready(function () {
         // 加载要修改的数据到 modal
         loadData(id);
         document.getElementById("videoImgList").innerHTML="";
-        loadVideoImgListData(id);
         $("#modal-info").modal('show');
     });
 
@@ -108,32 +107,37 @@ $(document).ready(function () {
             if (e.success) {
                 setTimeout(function () {
                 }, 10);
-                $("form#info_form").find("#userName").val(e.data[0].userName);
-                $("form#info_form").find("#fidId").val(e.data[0].fidId);
-                $("form#info_form").find("#code").val(e.data[0].code);
-                $("form#info_form").find("#uploadTime").val(e.data[0].uploadTime);
-                $("form#info_form").find("#likeNum").val(e.data[0].likeNum);
-                var videoUrl = "file/download/"+e.data[0].md5;
-                $("form#info_form").find("#video").attr("src",$("#video").val(videoUrl));
+                $("form#info_form").find("#userName").val(e.data.userName);
+                $("form#info_form").find("#fidId").val(e.data.fidId);
+                $("form#info_form").find("#code").val(e.data.code);
+                $("form#info_form").find("#uploadTime").val(e.data.uploadTime);
+                $("form#info_form").find("#likeNum").val(e.data.likeNum);
+                $("form#info_form").find("#video").attr("src",$("#video").val(e.data.likeNum));
+                $.each(e.data.videoImgs,function (i, o) {
+                    var div = document.getElementById("videoImgList");
+                    var img = document.createElement("img");
+                    img.src = o;
+                    div.appendChild(img);
+                })
             }
         });
     }
-    // 加载视频图片列表
-    var loadVideoImgListData = function (id) {
-        Request.get("video/videodetailimg/" + id, {}, function (e) {
-            if (e.success) {
-                setTimeout(function () {
-                }, 10);
-                    $.each(e.data,function (i, o) {
-                        var videoUrl = "file/download/" + o.md5;
-                        var div = document.getElementById("videoImgList");
-                        var img = document.createElement("img");
-                        img.src = videoUrl;
-                        div.appendChild(img);
-                    })
-                }
-        });
-    }
+    // // 加载视频图片列表
+    // var loadVideoImgListData = function (id) {
+    //     Request.get("video/videodetailimg/" + id, {}, function (e) {
+    //         if (e.success) {
+    //             setTimeout(function () {
+    //             }, 10);
+    //                 $.each(e.data,function (i, o) {
+    //                     var videoUrl = "file/download/" + o.md5;
+    //                     var div = document.getElementById("videoImgList");
+    //                     var img = document.createElement("img");
+    //                     img.src = videoUrl;
+    //                     div.appendChild(img);
+    //                 })
+    //             }
+    //     });
+    // }
 
     //视频启用
     $("#video_list").off('click', '.btn-open').on('click', '.btn-open', function () {

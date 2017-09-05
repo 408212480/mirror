@@ -68,16 +68,6 @@ public class GoodsOrderApiController extends GenericController<GoodsOrder, Strin
     public ResponseMessage allOrderList(HttpServletRequest req, QueryParam queryParam) {
         List<GoodsOrderInfo> goodsOrderInfoList = getService().allOrderList(queryParam);
         for (GoodsOrderInfo goodsOrderInfo : goodsOrderInfoList) {
-            if (goodsOrderInfo.getOrderStatus() == GoodsOrder.order_received) {
-                GoodsComment goodsComment = goodsCommentService.selectByOrderId(goodsOrderInfo.getOrderId());
-                if (goodsComment != null) {
-                    goodsOrderInfo.setOrderStatus(GoodsOrder.order_closed);
-                    GoodsOrder goodsOrder = new GoodsOrder();
-                    goodsOrder.setId(goodsOrderInfo.getId());
-                    goodsOrder.setOrderStatus(GoodsOrder.order_closed);
-                    goodsOrderService.update(goodsOrder);
-                }
-            }
             String md5 = getService().goodsImg(goodsOrderInfo);
             if (!StringUtils.isBlank(md5)) {
                 md5 = resourcesService.selectSingleImage(WebUtil.getBasePath(req), md5);
@@ -102,18 +92,6 @@ public class GoodsOrderApiController extends GenericController<GoodsOrder, Strin
     public ResponseMessage orderList(@PathVariable("orderStatus") String orderStatus, HttpServletRequest req, QueryParam queryParam) {
         List<GoodsOrderInfo> goodsOrderInfoList = getService().orderList(orderStatus, queryParam);
         for (GoodsOrderInfo goodsOrderInfo : goodsOrderInfoList) {
-            if (orderStatus.equals("4")) {
-                //获取订单评价,有评价的更新订单状态
-                GoodsComment goodsComment = goodsCommentService.selectByOrderId(goodsOrderInfo.getOrderId());
-                if (goodsComment != null) {
-                    GoodsOrder goodsOrder = new GoodsOrder();
-                    goodsOrder.setId(goodsOrderInfo.getId());
-                    goodsOrder.setOrderStatus(GoodsOrder.order_closed);
-                    goodsOrderService.update(goodsOrder);
-                    goodsOrderInfoList.remove(goodsOrderInfo);
-                    continue;
-                }
-            }
             String md5 = getService().goodsImg(goodsOrderInfo);
             if (!StringUtils.isBlank(md5)) {
                 md5 = resourcesService.selectSingleImage(WebUtil.getBasePath(req), md5);
@@ -194,39 +172,6 @@ public class GoodsOrderApiController extends GenericController<GoodsOrder, Strin
         return ResponseMessage.error("goods not found");
     }
 
-
-    /**
-     * 新增商品评价
-     *
-     * @param goodsComment 商品评价
-     * @param files        商品评价图片列表
-     * @return 请求结果
-     * @throws IOException
-     */
-    @RequestMapping(value = "/comment", method = RequestMethod.POST)
-    @AccessLogger("新增商品评价")
-    @Authorize(action = "C")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseMessage comment(@RequestBody GoodsComment goodsComment, @RequestParam("file") MultipartFile[] files) throws IOException {
-        goodsComment.setUserId(WebUtil.getLoginUser().getId());
-        String pk = goodsCommentService.insert(goodsComment);
-        for (MultipartFile file : files) {
-
-            if (!file.isEmpty()) {
-                if (logger.isInfoEnabled())
-                    logger.info("start write file:{}", file.getOriginalFilename());
-                String fileName = file.getOriginalFilename();
-                Resources resources = fileService.saveFile(file.getInputStream(), fileName);
-                MetaDataRel metaDataRel = new MetaDataRel();
-                metaDataRel.setRecordId(pk);
-                metaDataRel.setDataId(resources.getId());
-                metaDataRel.setType(0);
-                metaDataRel.setDataType(3);
-                metaDataRelService.insert(metaDataRel);
-            }
-        }//响应上传成功的资源信息
-        return ResponseMessage.created(pk);
-    }
 
     /**
      * 根据主键取消订单

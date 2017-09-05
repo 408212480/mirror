@@ -22,7 +22,7 @@ public interface videoService extends GenericService<video, String> {
 
     List<video> List(QueryParam param);
 
-    List<video> getVideoByVideoId(String videoId);
+    video getVideoByVideoId(String videoId);
 
     List<Map> selectVideoImgByVideoId(String videoId);
 

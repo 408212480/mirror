@@ -73,20 +73,19 @@
         SELECT
         tv.device_id,
         tv.u_id,
-        tv.status,
+        tv. STATUS,
         tv.upload_time,
         tv.like_num,
+        sr.md5 md5,
         td.`code`,
-        su.username,
-        sr.md5,
-        sr.`name`,
+        su.name userName,
         tfg.fid_id
         FROM
         t_video tv
-        JOIN t_video_post tvp ON tv.u_id = tvp.video_id
+        LEFT JOIN t_video_user tvu ON tv.u_id = tvu.video_id
         JOIN t_deivce td ON td.u_id = tv.device_id
-        JOIN s_user su ON su.u_id = tvp.user_id
-        JOIN s_resources sr ON sr.u_id=(
+        JOIN t_user_info su ON su.user_id = tvu.user_id
+        JOIN s_resources sr ON sr.u_id = (
         SELECT
         t_metadata_rel.data_id
         FROM
@@ -103,25 +102,26 @@
         WHERE
         t_video_goods.video_id = tv.u_id
         )
+        GROUP BY
+        tv.u_id
     </select>
     <select id="ListPager" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="videoResultMap">
         SELECT
         tv.device_id,
         tv.u_id,
-        tv.status,
+        tv. STATUS,
         tv.upload_time,
         tv.like_num,
+        sr.md5 md5,
         td.`code`,
-        su.username,
-        sr.md5,
-        sr.`name`,
+        su.name userName,
         tfg.fid_id
         FROM
         t_video tv
-        JOIN t_video_post tvp ON tv.u_id = tvp.video_id
+        JOIN t_video_user tvu ON tv.u_id = tvu.video_id
         JOIN t_deivce td ON td.u_id = tv.device_id
-        JOIN s_user su ON su.u_id = tvp.user_id
-        JOIN s_resources sr ON sr.u_id=(
+        JOIN t_user_info su ON su.user_id = tvu.user_id
+        JOIN s_resources sr ON sr.u_id = (
         SELECT
         t_metadata_rel.data_id
         FROM
@@ -138,6 +138,8 @@
         WHERE
         t_video_goods.video_id = tv.u_id
         )
+        GROUP BY
+        tv.u_id
         limit #{pageIndex},#{pageSize}
     </select>
 
@@ -148,24 +150,18 @@
         tv.upload_time,
         tv.like_num,
         td.`code`,
-        su.username,
+        su.`name` userName,
         sr.md5,
-        sr.`name`,
-        tfg.fid_id
+        tfg.fid_id,
+        tmr.record_id recordId
         FROM
         t_video tv
-        JOIN t_video_post tvp ON tv.u_id = tvp.video_id
+        LEFT JOIN t_video_user tvu ON tv.u_id = tvu.video_id
         JOIN t_deivce td ON td.u_id = tv.device_id
-        JOIN s_user su ON su.u_id = tvp.user_id
-        JOIN s_resources sr ON sr.u_id=(
-        SELECT
-        t_metadata_rel.data_id
-        FROM
-        t_metadata_rel
-        WHERE
-        t_metadata_rel.record_id = tv.u_id
-        AND t_metadata_rel.type = 1
-        )
+        JOIN t_user_info su ON su.user_id = tvu.user_id
+        JOIN t_metadata_rel tmr ON tmr.record_id = tv.video_url
+        JOIN s_resources sr ON sr.u_id = tmr.data_id
+        AND tmr.type = 1
         JOIN t_fid_goodsspec tfg ON tfg.spec_id = (
         SELECT
         t_video_goods.goodsspec_id
@@ -173,7 +169,11 @@
         t_video_goods
         WHERE
         t_video_goods.video_id = tv.u_id
-        ) WHERE tv.u_id = #{videoId}
+        )
+        WHERE
+        tv.u_id = #{videoId}
+        GROUP BY
+        tv.u_id
     </select>
 
     <select id="getRecognitionVideoPager" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="java.util.HashMap">
@@ -200,6 +200,15 @@
         AND t_metadata_rel.data_type = 4
         AND t_metadata_rel.type = 0
         ) AS t ON t.record_id = t_video.video_url
+        WHERE
+        NOT EXISTS (
+        SELECT
+        t_video_user.video_id
+        FROM
+        t_video_user
+        WHERE
+        t_video.u_id = t_video_user.video_id
+        )
         GROUP BY
         videoId
         LIMIT #{pageIndex},#{pageSize}
@@ -229,6 +238,15 @@
         AND t_metadata_rel.data_type = 4
         AND t_metadata_rel.type = 0
         ) AS t ON t.record_id = t_video.video_url
+        WHERE
+        NOT EXISTS (
+        SELECT
+        t_video_user.video_id
+        FROM
+        t_video_user
+        WHERE
+        t_video.u_id = t_video_user.video_id
+        )
         GROUP BY
         videoId
     </select>

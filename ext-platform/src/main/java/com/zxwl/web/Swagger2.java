@@ -15,11 +15,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * Author: Sendya <18x@loacg.com>
  * Date: 2017/8/23 15:39
  */
-@Configuration
-@EnableSwagger2
+/*@Configuration
+@EnableSwagger2*/
 public class Swagger2 {
 
-    @Bean
+    //@Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())

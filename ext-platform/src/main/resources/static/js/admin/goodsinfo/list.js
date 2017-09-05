@@ -187,7 +187,7 @@ jQuery(document).ready(function () {
         switch (addType) {
             case 'base_list':
                 // 基本信息分页新增
-
+                setEmptyModalData();
                 $("#modal-basebox").modal('show');
 
                 break;
@@ -272,7 +272,9 @@ jQuery(document).ready(function () {
                     buttons += '<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">操作';
                     buttons += '<span class="caret"></span></button>';
                     buttons += '<ul class="dropdown-menu">';
-                        buttons += '<li><a href="javascript:;" class="btn-moreinfo" data-id="'+a+'">查看</a></li>';
+                        buttons += '<li><a href="javascript:;" class="btn-moreinfo" data-id="'+a+'">商品详情</a></li>';
+                        buttons += '<li><a href="javascript:;" class="btn-class-list" data-id="' + a+ '">规格列表</a></li>';
+                        buttons += '<li><a href="javascript:;" class="btn-comment-list" data-id="'+a+'">评论列表</a></li>';
                     if (accessUpdate) {
                         buttons += '<li><a href="javascript:;" class="btn-edit" data-id="'+a+'">编辑</a></li>';
                     }
@@ -294,6 +296,17 @@ jQuery(document).ready(function () {
         $('#input_goods_classcode').val(obj.classCode);
         $('#input_goods_shopname').val(obj.shopName);
         $('#input_goods_describe').val(obj.describe);
+    };
+
+    var setEmptyModalData = function () {
+        $('#input_goods_name').val('');
+        $('#input_goods_price').val('');
+        $('#input_goods_classcode').val('');
+        $('#input_goods_shopname').val('');
+        $('#input_goods_describe').val('');
+
+        $('input[name="imgIds"]').remove();
+        $('input[name="carouselImgUrl"]').remove();
     };
 
     // 初始化页面文件上传
@@ -425,6 +438,25 @@ jQuery(document).ready(function () {
             }
         });
     });
+
+    $("#base_list").off('click', '.btn-class-list').on('click', '.btn-class-list', function () {
+        var that = $(this);
+        that.attr('disabled', 'disabled');
+        toastr.info('加载数据中..请稍后', opts);
+        var goods_id = $(this).data('id');
+        initGoodsSpecTable(goods_id);
+        $('#modal-classinfo').modal('show');
+
+    });
+    $("#base_list").off('click', '.btn-comment-list').on('click', '.btn-comment-list', function () {
+        var that = $(this);
+        that.attr('disabled', 'disabled');
+        var goods_id = $(this).data('id');
+        initGoodsCommentTable(goods_id);
+        $('#modal-comment-box').modal('show');
+    });
+
+
 
     $('#base_data_table').off('click', '.btn-edit').on('click', '.btn-edit', function () {
         var id = $(this).data('id');
@@ -559,10 +591,247 @@ jQuery(document).ready(function () {
     };
 
     loadShopList();
-
+    var goodsSpecTable = undefined;
     // 规格列表信息加载
+    var initGoodsSpecTable = function (goodsId) {
+        $('#btn-class-new').data('gid', goodsId);
+        goodsSpecTable = $("#class_list_table").DataTable({
+            "language": lang,
+            "paging": false,
+            "lengthChange": true,
+            "searching": false,
+            "ordering": false,
+            "info": true,
+            "autoWidth": false,
+            "bStateSave": true,
+            "bFilter": true, //搜索栏
+            "destroy": true,
+            "bSort": false,
+            "serverSide": true,
+            "sPaginationType": "full_numbers",
+            "ajax": function (data, callback, settings) {
+                var param = {};
+                param.paging = false;
 
+                var selected = $('#base_tree').treeview('getSelected');
+                if (selected == null || selected.length == 0) {
+                    return;
+                }
+
+                $.ajax({
+                    url: BASE_PATH + "goodsinfospec/specList/" + goodsId,
+                    type: "GET",
+                    cache: false,
+                    data: {},
+                    dataType: "json",
+                    success: function (result) {
+                        var resultData = {};
+                        resultData.draw = data.draw;
+                        resultData.recordsTotal = result.data.data.length;
+                        resultData.recordsFiltered = result.data.data.length;
+                        resultData.data = result.data.data;
+                        callback(resultData);
+                    },
+                    error: function (jqXhr) {
+                        toastr.warning("请求列表数据失败, 请重试");
+                    }
+                });
+            },
+            columns: [
+                {"data": "id"},
+                {"data": "color"},
+                {"data": "size"},
+                {"data": "goodsId"}
+            ],
+            "aoColumnDefs": [
+                {
+                    "sClass": "center",
+                    "aTargets": [0],
+                    "mData": "id",
+                    "mRender": function (a, b, c, d) {
+                        return d.row;
+                    }
+                },
+                {
+                    "sClass":"center",
+                    "aTargets":[3],
+                    "mData":"id",
+                    "mRender":function(a,b,c,d) {//a表示statCleanRevampId对应的值，c表示当前记录行对象
+                        // 修改 删除 权限判断
+                        var buttons = '';
+                        if (accessUpdate || accessDelete) {
+                            buttons = '<div class="btn-group">';
+                            buttons += '<div class="btn-group">';
+                            buttons += '<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">操作';
+                            buttons += '<span class="caret"></span></button>';
+                            buttons += '<ul class="dropdown-menu">';
+                            if (accessUpdate) {
+                                buttons += '<li><a href="javascript:;" class="btn-class-edit" data-id="'+c.id+'" data-gid="'+goodsId+'">编辑</a></li>';
+                            }
+                            if (accessDelete) {
+                                buttons += '<li><a href="javascript:;" class="btn-class-del" data-id="'+c.id+'" data-gid="'+goodsId+'">删除</a></li>';
+                            }
+                            buttons += '</ul></div></div>';
+                        }
+                        return buttons;
+
+                    }
+                }
+            ]
+        });
+    };
+
+    // 绑定规格操作事件
+    // 新增规格
+    $('#modal-classinfo').off('click', '#btn-class-new').on('click', '#btn-class-new', function () {
+        $('#input_class_color').val('');
+        $('#input_class_size').val('');
+        $('#input_class_quality').val('');
+        $('#class-form').data('type', '0').data('id', '').data('gid', $(this).data('gid')); // 追加表单状态为 1 ，编辑 。 0 ， 新增
+        $('#modal-class-modify').modal('show');
+    });
+    // 修改规格
+    $('#class_list_table').off('click', '.btn-class-edit').on('click', '.btn-class-edit', function () {
+        var that = $(this);
+        var goodsId = that.data('gid');
+        var specId = that.data('id');
+
+        if (goodsId != '' && specId != '') {
+            Request.get('goodsinfospec/' + specId, {}, function (e) {
+                if (e.success) {
+
+                    $('#input_class_color').val(e.data.color);
+                    $('#input_class_size').val(e.data.size);
+                    $('#input_class_quality').val(e.data.quality);
+                    $('#class-form').data('type', '1').data('id', specId); // 追加表单状态为 1 ，编辑 。 0 ， 新增
+                    $('#modal-class-modify').modal('show');
+                }
+            });
+        }
+    });
+    // 删除规格
+    $('#class_list_table').off('click', '.btn-class-del').on('click', '.btn-class-del', function () {
+        var that = $(this);
+        var goodsId = that.data('gid');
+        var specId = that.data('id');
+
+        if (goodsId != '' && specId != '') {
+            Request.delete('goodsinfospec/' + specId, {}, function (e) {
+                if (e.success) {
+                    toastr.success('删除成功', opts);
+                    goodsSpecTable.ajax.reload().draw();
+                } else {
+                    toastr.warning('删除失败', opts);
+                }
+            });
+        }
+    });
+
+    $('form#class-form').validate({
+        rules: {
+            input_class_size: {required: true},
+            input_class_color: {required: true},
+            input_class_quality: {required: true}
+        },
+        messages: {
+            input_class_size: {required: "请输入规格尺码"},
+            input_class_color: {required: "请输入规格颜色"},
+            input_class_quality: {required: "请输入该规格商品数量"}
+        },
+        submitHandler: function (form) {
+
+            var btn = $('button[type="submit"]');
+            btn.attr('disabled',"true").html("保存中..请稍后");
+            var reqType = $(form).data('type') == '0';
+            var id = $(form).data('id');
+            var gid =$(form).data('gid');
+            var req = reqType ? Request.post : Request.put;
+
+            var data = {
+                color: $(form).find('#input_class_color').val(),
+                size: $(form).find('#input_class_size').val(),
+                quality: $(form).find('#input_class_quality').val()
+            };
+            if (gid != '' && gid != undefined && gid != null) {
+                data.goodsId = gid;
+            }
+
+            req('goodsinfospec/' + (reqType ? '' : id), data, function (e) {
+                btn.html("保存").removeAttr('disabled');
+
+                if (e.success) {
+                    toastr.success('修改成功' , opts);
+                    goodsSpecTable.ajax.reload().draw();
+                    $('#modal-class-modify').modal('hide');
+                } else {
+                    toastr.success('修改失败' , opts);
+                }
+            });
+            return false;
+        }
+    });
 
     // 评价列表加载
+
+    var goodsCommentTable = undefined;
+    var initGoodsCommentTable = function (goodsId) {
+        goodsCommentTable = $("#comment_list_table").DataTable({
+            "language": lang,
+            "paging": false,
+            "lengthChange": true,
+            "searching": false,
+            "ordering": false,
+            "info": true,
+            "autoWidth": false,
+            "bStateSave": true,
+            "bFilter": true, //搜索栏
+            "destroy": true,
+            "bSort": false,
+            "serverSide": true,
+            "sPaginationType": "full_numbers",
+            "ajax": function (data, callback, settings) {
+                var param = {};
+                param.paging = false;
+
+                $.ajax({
+                    url: BASE_PATH + "goodscomment/goods/" + goodsId,
+                    type: "GET",
+                    cache: false,
+                    data: {},
+                    dataType: "json",
+                    success: function (result) {
+                        var resultData = {};
+                        resultData.draw = data.draw;
+                        resultData.recordsTotal = result.data.total;
+                        resultData.recordsFiltered = result.data.total;
+                        resultData.data = result.data.data;
+                        callback(resultData);
+                    },
+                    error: function (jqXhr) {
+                        toastr.warning("请求列表数据失败, 请重试");
+                    }
+                });
+            },
+            columns: [
+                {"data": "username"},
+                {"data": "username"},
+                {"data": "comment_level"},
+                {"data": "comment"},
+                {"data": "gmt_create"}
+            ],
+            "aoColumnDefs": [
+                {
+                    "sClass": "center",
+                    "aTargets": [0],
+                    "mData": "id",
+                    "mRender": function (a, b, c, d) {
+                        return d.row;
+                    }
+                }
+            ]
+        });
+    }
+
+
 
 });

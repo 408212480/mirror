@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping(value = "/goodsclass")
 @AccessLogger("商品类别")
-@Authorize(module = "goodsclass")
+@Authorize
 public class GoodsClassController extends GenericController<GoodsClass, String> {
 
     @Resource

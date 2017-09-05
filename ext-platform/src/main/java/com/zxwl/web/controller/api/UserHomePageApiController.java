@@ -179,4 +179,15 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
                 .include(getPOType(), param.getIncludes())
                 .exclude(getPOType(), param.getExcludes());
     }
+
+    @RequestMapping(value = "/balance", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @AccessLogger("获取用户余额")
+    public ResponseMessage getBalance() {
+        String userId = WebUtil.getLoginUser().getId();
+        UserAccount ua = userAccountService.createQuery().select("balance").where(UserAccount.Property.userId, userId).single();
+        if (ua != null) {
+            return ok(ua.getBalance());
+        }
+        return ok(0.00);
+    }
 }

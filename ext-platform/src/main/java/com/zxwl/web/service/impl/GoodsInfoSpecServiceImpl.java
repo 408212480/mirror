@@ -1,5 +1,6 @@
 package com.zxwl.web.service.impl;
 
+import com.zxwl.web.bean.common.PagerResult;
 import com.zxwl.web.bean.common.QueryParam;
 import com.zxwl.web.bean.GoodsInfoSpec;
 import com.zxwl.web.dao.GoodsInfoSpecMapper;
@@ -8,6 +9,7 @@ import com.zxwl.web.service.GoodsInfoSpecService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -84,5 +86,21 @@ public class GoodsInfoSpecServiceImpl extends AbstractServiceImpl<GoodsInfoSpec,
     @Override
     public GoodsInfoSpec selectOne(GoodsInfoSpec goodsInfoSpec) {
         return goodsInfoSpecMapper.selectOne(goodsInfoSpec);
+    }
+
+    @Override
+    public PagerResult<GoodsInfoSpec> selectList(QueryParam param) {
+        PagerResult<GoodsInfoSpec> pagerResult = new PagerResult<>();
+        param.setPaging(false);
+        int total = this.createQuery().where(GoodsInfoSpec.Property.goodsId,param.getParam().get("goods_id")).list().size();
+        pagerResult.setTotal(total);
+        if (total == 0) {
+            pagerResult.setData(new ArrayList<>());
+        } else {
+            //根据实际记录数量重新指定分页参数
+            param.rePaging(total);
+            pagerResult.setData(this.createQuery().setParam(param).where(GoodsInfoSpec.Property.goodsId,param.getParam().get("goods_id")).list());
+        }
+        return pagerResult;
     }
 }

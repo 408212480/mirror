@@ -22,8 +22,6 @@ import java.util.List;
 @Service("shopService")
 public class ShopServiceImpl extends AbstractServiceImpl<Shop, String> implements ShopService {
 
-    private String imgPath = "/file/image/";
-
     private String basePath = "/";
 
     @Resource

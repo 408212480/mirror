@@ -3,6 +3,7 @@ package com.zxwl.web.bean;
 import com.zxwl.web.bean.po.GenericPo;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 视频存储
@@ -47,6 +48,10 @@ public class video extends GenericPo<String> {
     private String fidId;
     //分佣
     private String dividend;
+
+    private String recordId;
+
+    private List<String> videoImgs;
 
     public String getVideoUrl() {
         return videoUrl;
@@ -182,6 +187,22 @@ public class video extends GenericPo<String> {
 
     public void setDividend(String dividend) {
         this.dividend = dividend;
+    }
+
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
+    }
+
+    public List<String> getVideoImgs() {
+        return videoImgs;
+    }
+
+    public void setVideoImgs(List<String> videoImgs) {
+        this.videoImgs = videoImgs;
     }
 
     public interface Property extends GenericPo.Property {

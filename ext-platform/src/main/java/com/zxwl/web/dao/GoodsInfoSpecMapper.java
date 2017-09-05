@@ -44,4 +44,7 @@ public interface GoodsInfoSpecMapper extends GenericMapper<GoodsInfoSpec, String
     List<Map> goodsSizeList(String goodsId);
 
     GoodsInfoSpec selectOne(GoodsInfoSpec goodsInfoSpec);
+
+    List<GoodsInfoSpec> selectList(QueryParam param);
+
 }
