@@ -3,6 +3,7 @@ package com.zxwl.web.service.impl;
 import com.zxwl.web.bean.GoodsInfo;
 import com.zxwl.web.bean.MetaDataRel;
 import com.zxwl.web.bean.ShopGoods;
+import com.zxwl.web.bean.common.DeleteParam;
 import com.zxwl.web.bean.common.InsertParam;
 import com.zxwl.web.bean.common.PagerResult;
 import com.zxwl.web.bean.common.QueryParam;
@@ -12,6 +13,7 @@ import com.zxwl.web.dao.GoodsInfoMapper;
 import com.zxwl.web.dao.MetaDataRelMapper;
 import com.zxwl.web.dao.ShopGoodsMapper;
 import com.zxwl.web.service.GoodsInfoService;
+import com.zxwl.web.service.ShopGoodsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,9 @@ public class GoodsInfoServiceImpl extends AbstractServiceImpl<GoodsInfo, String>
 
     @Resource
     protected ShopGoodsMapper shopGoodsMapper;
+
+    @Resource
+    protected ShopGoodsService shopGoodsService;
 
     @Resource
     protected MetaDataRelMapper metaDataRelMapper;
@@ -68,59 +73,112 @@ public class GoodsInfoServiceImpl extends AbstractServiceImpl<GoodsInfo, String>
 
         // 插入 t_shop_goods 中间表
         if (data.getShopId() != null && !"".equals(data.getShopId())) {
-            String[] shopId = data.getShopId().split(",");
-            for (int i = 0; i < shopId.length; i++) {
-                ShopGoods shopGoods = new ShopGoods();
-                shopGoods.setId(GenericPo.createUID());
-                shopGoods.setGoodsId(data.getId());
-                shopGoods.setShopId(shopId[i]);
-
-                shopGoodsMapper.insert(InsertParam.build(shopGoods));
-            }
+            this.insertShopGoodsRel(data.getShopId(), data.getId());
         }
         // 插入 t_metadata_rel 中间表（商品详情图）
         if (data.getImgIds() != null && !"".equals(data.getImgIds())) {
-            String[] imgIds = data.getImgIds().split(",");
-            for (int i = 0; i < imgIds.length; i++) {
-
-                if (imgIds[i] != null && !"".equals(imgIds[i])) {
-                    MetaDataRel metaDataRel = new MetaDataRel();
-                    metaDataRel.setId(GenericPo.createUID());
-                    metaDataRel.setDataId(imgIds[i].trim());
-                    metaDataRel.setRecordId(data.getImgId());
-                    metaDataRel.setDataType(2);
-                    metaDataRel.setType(0);
-                    metaDataRelMapper.insert(InsertParam.build(metaDataRel));
-                }
-            }
+            this.insertImg(data.getImgIds(), data.getImgId());
         }
+
         // 插入 t_metadata_rel 中间表（轮播图）
         if (data.getCarouselImgUrls() != null && !"".equals(data.getCarouselImgUrls())) {
-            String[] carouselImgUrls = data.getCarouselImgUrls().split(",");
-            for (int i = 0; i < carouselImgUrls.length; i++) {
-                if (carouselImgUrls[i] != null && !"".equals(carouselImgUrls[i])) {
-                    MetaDataRel metaDataRel = new MetaDataRel();
-                    metaDataRel.setId(GenericPo.createUID());
-                    metaDataRel.setDataId(carouselImgUrls[i].trim());
-                    metaDataRel.setRecordId(data.getCarouselImgUrl());
-                    metaDataRel.setDataType(2);
-                    metaDataRel.setType(0);
-                    metaDataRelMapper.insert(InsertParam.build(metaDataRel));
-                }
-            }
+            this.insertImg(data.getCarouselImgUrls(), data.getCreatorId());
         }
 
         return data.getId();
     }
 
     @Override
+    @Transactional
     public int update(GoodsInfo data) {
-        return super.update(data);
+        tryValidPo(data);
+
+        data.setLastChangeUser(WebUtil.getLoginUser().getId());
+
+        // 删除资源表关联资源
+        if (data.getImgId() != null) {
+            metaDataRelMapper.deleteByRecordId(data.getImgId());
+        }
+
+        // 删除 店铺商品关联
+        shopGoodsService.createDelete().where(ShopGoods.Property.goodsId, data.getId()).exec();
+
+        createUpdate().fromBean(data).where(GenericPo.Property.id).exec();
+
+
+        // 插入 t_shop_goods 中间表
+        if (data.getShopId() != null && !"".equals(data.getShopId())) {
+            this.insertShopGoodsRel(data.getShopId(), data.getId());
+        }
+
+        // 插入 t_metadata_rel 中间表（商品详情图）
+        if (data.getImgIds() != null && !"".equals(data.getImgIds())) {
+            this.insertImg(data.getImgIds(), data.getImgId());
+        }
+
+        // 插入 t_metadata_rel 中间表（轮播图）
+        if (data.getCarouselImgUrls() != null && !"".equals(data.getCarouselImgUrls())) {
+            this.insertImg(data.getCarouselImgUrls(), data.getCreatorId());
+        }
+
+        return 1;
+    }
+
+    /**
+     * 插入 店铺商品关联表
+     * @param ids
+     * @param goodsId
+     * @return
+     */
+    private int insertShopGoodsRel(String ids, String goodsId) {
+        int flag = 0;
+        String[] shopIds = ids.split(",");
+        for (String shopId : shopIds) {
+            ShopGoods shopGoods = new ShopGoods();
+            shopGoods.setId(GenericPo.createUID());
+            shopGoods.setGoodsId(goodsId);
+            shopGoods.setShopId(shopId);
+            flag = shopGoodsMapper.insert(InsertParam.build(shopGoods));
+        }
+        return flag;
+    }
+
+    /**
+     * 插入 媒体资源 关联表
+     * @param imgs
+     * @param recordId
+     * @return
+     */
+    private int insertImg(String imgs, String recordId) {
+        int flag = 0;
+        String[] args = imgs.split(",");
+        for (String str : args) {
+            if (str != null && !"".equals(str)) {
+                MetaDataRel metaDataRel = new MetaDataRel();
+                metaDataRel.setId(GenericPo.createUID());
+                metaDataRel.setDataId(str.trim());
+                metaDataRel.setRecordId(recordId);
+                metaDataRel.setDataType(2);
+                metaDataRel.setType(0);
+                flag = metaDataRelMapper.insert(InsertParam.build(metaDataRel));
+            }
+        }
+        return flag;
     }
 
     @Override
     public int update(List<GoodsInfo> data) {
         return super.update(data);
+    }
+
+    public int delete(GoodsInfo object) {
+        // 删除媒体资源关系
+        metaDataRelMapper.deleteByRecordId(object.getImgId());
+        // 删除 店铺商品关系
+        shopGoodsService.createDelete().where(ShopGoods.Property.goodsId, object.getId());
+        // 删除 自身数据
+        int val = this.createDelete().where(GenericPo.Property.id, object.getId()).exec();
+        return val;
     }
 
     /**

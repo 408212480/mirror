@@ -24,6 +24,9 @@ public interface UserInfoService extends GenericService<UserInfo, String> {
     int setImg(UserInfo userInfo);
 
     UserInfo selectByUserId(String userId);
+    //查询用户信息
+    UserInfo selectUserInfoByUserId(String userId);
+
 
     /**
      * @author wuei 2017.8.30 15:36

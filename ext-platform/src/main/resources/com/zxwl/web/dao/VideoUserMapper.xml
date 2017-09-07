@@ -64,21 +64,21 @@
     </select>
     <select id="goodsVideoList"  parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
         <!--根据商品ID分页查询当前商品的所有试衣视频-->
-        SELECT t3.NAME, t6.userurl AS userimgurl,t3.upload_time AS post_time , t3.videourl, t4.videoimglist, t3.u_id AS videoId  FROM
+        SELECT t3.`name`, t3.avatar_id, t3.sex, t6.userurl AS userimgurl,t3.upload_time AS post_time , t3.videourl, t4.videoimglist, t3.u_id AS videoId  FROM
 
-        (SELECT tui.NAME, tui.avatar_id, t1.upload_time, sr.md5 AS videourl,t1.u_id FROM
+        (SELECT tui.`name`, tui.avatar_id, tui.sex, t1.upload_time, sr.md5 AS videourl,t1.u_id FROM
 
         (SELECT  tv.u_id, tv.video_url, tvu.user_id, tv.upload_time  FROM   t_video_user tvu, t_video tv
         WHERE  tvu.video_id=tv.u_id AND  tvu.goods_id=#{userId} AND tv.`status` =3) t1
         LEFT JOIN t_user_info tui ON tui.user_id= t1.user_id
         LEFT JOIN t_metadata_rel tmr ON tmr.record_id=t1.video_url AND tmr.type=1
-        LEFT JOIN s_resourcesp sr ON tmr.data_id= sr.u_id) t3,
+        LEFT JOIN s_resources sr ON tmr.data_id= sr.u_id) t3,
 
         (SELECT  GROUP_CONCAT(sr.md5) AS videoimglist,  tmr.record_id, t2.u_id AS video_id FROM
         (SELECT  tv.u_id, tv.video_url, tvu.user_id, tv.upload_time  FROM   t_video_user tvu, t_video tv
         WHERE  tvu.video_id=tv.u_id AND  tvu.goods_id=#{userId} AND tv.`status` =3) t2
         LEFT JOIN t_metadata_rel tmr ON tmr.record_id=t2.video_url AND tmr.data_type=4
-        LEFT JOIN s_resources sr ON tmr.data_id= sr.u_id GROUP BY tmr.record_id) t4,
+        LEFT JOIN s_resources sr ON tmr.data_id= sr.u_id GROUP BY t2.u_id) t4,
 
         (SELECT sr.md5 AS userurl, t5.u_id FROM
         (SELECT  tv.u_id, tv.video_url, tvu.user_id, tv.upload_time  FROM   t_video_user tvu, t_video tv

@@ -113,6 +113,11 @@ public class UserInfoServiceImpl extends AbstractServiceImpl<UserInfo, String> i
         return QueryService.createQuery(userInfoMapper).where(UserInfo.Property.userId,userId).single();
     }
 
+    @Override
+    public UserInfo selectUserInfoByUserId(String userId) {
+        return getMapper().selectUserInfoByUserId(userId);
+    }
+
     //获取用户信息
     @Override
     public List<UserInfo> selectUserInfo(HttpServletRequest req) {

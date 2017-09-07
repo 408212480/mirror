@@ -19,4 +19,6 @@ public interface UserInfoMapper extends GenericMapper<UserInfo,String> {
     List<UserInfo> selectUserInfo();
     List<UserInfo> selectUserInfoPager(QueryParam param);
 
+    UserInfo selectUserInfoByUserId (String userId);
+
 }

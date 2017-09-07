@@ -113,8 +113,10 @@ public class VideoUserServiceImpl extends AbstractServiceImpl<VideoUser, String>
                         videoimglist = convertStrToArray(videoimgs);
                         map.put("videoimglist", ResourceUtil.resourceBuildPath(req, String.valueOf(videoimglist[0]).trim()));
                     }
-                    if (!StringUtils.isEmpty(String.valueOf(map.get("userimgurl")))) {
+                    if (map.get("userimgurl") != null) {
                         map.put("userimgurl", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("userimgurl")).trim()));
+                    }else {
+                        map.put("userimgurl", ResourceUtil.getUserDefaultUserImg(req,(Integer) map.get("sex")));
                     }
                     if (!StringUtils.isEmpty(String.valueOf(map.get("videourl")))) {
                         map.put("videourl", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("videourl")).trim(), type));

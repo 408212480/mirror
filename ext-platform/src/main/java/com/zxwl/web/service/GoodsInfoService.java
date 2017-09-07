@@ -16,4 +16,6 @@ public interface GoodsInfoService extends GenericService<GoodsInfo, String> {
     PagerResult<GoodsInfo> selectList(QueryParam param);
 
     GoodsInfo selectSingleInfo(@Param("uid") String uid);
+
+    int delete(GoodsInfo object);
 }

@@ -158,15 +158,24 @@ $(function () {
         return ((type == "json") ? JSON.stringify(dataArray) : dataArray);
     }
 
+    jQuery.validator.addMethod("telphoneValid", function(value, element) {
+        var tel = /^(13|14|15|17|18)\d{9}$/;
+        return tel.test(value) || this.optional(element);
+    }, "请输入正确的手机号码");
+
     //新增或修改用户验证
     $("form#user_form").validate({
         rules: {
             username: {required: true},
-            password: {required: true}
+            password: {required: true},
+            email: {required: true, email: true},
+            phone: {required: true, telphoneValid: true}
         },
         messages: {
             username: {required: "请输入用户名."},
-            password: {required: "请输入密码"}
+            password: {required: "请输入密码"},
+            email: {required: "请输入 E-Mail 地址", email: "请输入正确的 E-Mail 地址"},
+            phone: {required: "请输入手机号码", telphoneValid: "请输入正确的手机号码"}
         },
         submitHandler: function (form) {
 

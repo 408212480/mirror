@@ -2,6 +2,7 @@ package com.zxwl.web.controller;
 
 import com.zxwl.web.bean.common.PagerResult;
 import com.zxwl.web.bean.common.QueryParam;
+import com.zxwl.web.bean.po.GenericPo;
 import com.zxwl.web.core.exception.NotFoundException;
 import com.zxwl.web.core.logger.annotation.AccessLogger;
 import com.zxwl.web.core.authorize.annotation.Authorize;
@@ -64,6 +65,44 @@ public class GoodsInfoController extends GenericController<GoodsInfo, String> {
         if (po == null)
             throw new NotFoundException("data is not found!");
         return ok(po);
+    }
+
+    /**
+     * 根据主键修改数据
+     *
+     * @param id     要修改数据的主键值
+     * @param object 要修改的数据
+     * @return 请求结果
+     * @throws NotFoundException 要修改的数据不存在
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @AccessLogger("修改")
+    @Authorize(action = "U")
+    @Override
+    public ResponseMessage update(@PathVariable("id") String id, @RequestBody GoodsInfo object) {
+        GoodsInfo old = getService().selectSingleInfo(id);
+        assertFound(old, "data is not found!");
+        object.setId(id);
+        int number = getService().update(object);
+        return ok(number);
+    }
+
+    /**
+     * 请求删除指定id的数据，请求方式为DELETE，使用rest风格，如请求 /delete/1 ，将删除id为1的数据
+     *
+     * @param id 要删除的id标识
+     * @return 删除结果
+     * @throws NotFoundException 要删除的数据不存在
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @AccessLogger("删除")
+    @Authorize(action = "D")
+    @Override
+    public ResponseMessage delete(@PathVariable("id") String id) {
+        GoodsInfo old = getService().selectSingleInfo(id);
+        assertFound(old, "data is not found!");
+        getService().delete(old);
+        return ok();
     }
 
     @RequestMapping(value = "/pic/{id}", method = RequestMethod.GET)

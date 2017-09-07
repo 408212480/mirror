@@ -166,7 +166,6 @@ jQuery(document).ready(function () {
                     that.baseTree = $('#base_tree').treeview({
                         data: e.data,
                         onNodeSelected: function (event, data) {
-                            console.log(data);
                             baseTable.ajax.reload().draw();
                         }
                     });
@@ -322,6 +321,7 @@ jQuery(document).ready(function () {
     // 初始化页面文件上传
     var fileUploadInput = function (options) {
         var defaultOption = {
+            dropZoneTitle: "拖拽文件到这里...",
             language : 'zh',
             allowedPreviewTypes : [ 'image' ],
             allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
@@ -463,77 +463,83 @@ jQuery(document).ready(function () {
         var id = $(this).data('id');
         $('#goods_form').data('type', "1");
         toastr.info('加载中', opts);
-        $("input#kv-explorer").fileinput('destroy');
-        $("input#carousel_upload").fileinput('destroy');
+
         Request.get('goodsinfo/' + id, {}, function (e) {
             if (e.success) {
+                fileUploadInput();
+                carouselUploadInput();
                 var data = e.data;
                 $('#goods_id').val(data.id);
                 $('#goods_title').val(data.title);
                 $('#goods_price').val(data.price);
                 $('#goods_describe').val(data.describe);
 
-                Request.get('goodsinfo/pic/' + data.imgId, {}, function (r) {
-                    if (r.success) {
+                if (data.imgId != null && data.imgId != '') {
+                    $("input#kv-explorer").fileinput('destroy');
+                    Request.get('goodsinfo/pic/' + data.imgId, {}, function (r) {
+                        if (r.success) {
 
-                        var preview = [];
-                        var previewConfig = [];
-                        for (var i = 0; i<r.data.length; i++) {
-                            preview.push(
-                                '<img src="' + r.data[i] +'" style="width: auto; height: 170px" class="file-preview-image" alt="" title="" />'
-                            );
-                            previewConfig.push({
-                                    caption: i+".jpg",
-                                    width: "60px",
-                                    url: 'file/',
-                                    key: i+1
-                                }
-                            );
+                            var preview = [];
+                            var previewConfig = [];
+                            for (var i = 0; i<r.data.length; i++) {
+                                preview.push(
+                                    '<img src="' + r.data[i] +'" style="width: auto; height: 170px" class="file-preview-image" alt="" title="" />'
+                                );
+                                previewConfig.push({
+                                        caption: i+".jpg",
+                                        width: "60px",
+                                        url: 'file/',
+                                        key: i+1
+                                    }
+                                );
+                            }
+                            fileUploadInput({
+                                language : 'zh',
+                                allowedPreviewTypes : [ 'image' ],
+                                allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
+                                'theme': 'explorer',
+                                'uploadUrl': Request.BASH_PATH + 'file/singleUpload',
+                                overwriteInitial: false,
+                                initialPreviewAsData: false,
+                                initialPreview: preview,
+                                initialPreviewConfig:previewConfig
+                            });
                         }
-                        fileUploadInput({
-                            language : 'zh',
-                            allowedPreviewTypes : [ 'image' ],
-                            allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
-                            'theme': 'explorer',
-                            'uploadUrl': Request.BASH_PATH + 'file/singleUpload',
-                            overwriteInitial: false,
-                            initialPreviewAsData: false,
-                            initialPreview: preview,
-                            initialPreviewConfig:previewConfig
-                        });
-                    }
-                });
+                    });
+                }
 
-
-                Request.get('goodsinfo/pic/' + data.carouselImgUrl, {}, function (r) {
-                    if (r.success) {
-                        var preview = [];
-                        var previewConfig = [];
-                        for (var i = 0; i<r.data.length; i++) {
-                            preview.push(
-                                '<img src="' + r.data[i] +'" style="width: auto; height: 170px" class="file-preview-image" alt="" title="" />'
-                            );
-                            previewConfig.push({
-                                    caption: i+".jpg",
-                                    width: "60px",
-                                    url: 'file/',
-                                    key: i+1
-                                }
-                            );
+                if (data.carouselImgUrl != null && data.carouselImgUrl != '') {
+                    $("input#carousel_upload").fileinput('destroy');
+                    Request.get('goodsinfo/pic/' + data.carouselImgUrl, {}, function (r) {
+                        if (r.success) {
+                            var preview = [];
+                            var previewConfig = [];
+                            for (var i = 0; i<r.data.length; i++) {
+                                preview.push(
+                                    '<img src="' + r.data[i] +'" style="width: auto; height: 170px" class="file-preview-image" alt="" title="" />'
+                                );
+                                previewConfig.push({
+                                        caption: i+".jpg",
+                                        width: "60px",
+                                        url: 'file/',
+                                        key: i+1
+                                    }
+                                );
+                            }
+                            carouselUploadInput({
+                                language : 'zh',
+                                allowedPreviewTypes : [ 'image' ],
+                                allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
+                                'theme': 'explorer',
+                                'uploadUrl': Request.BASH_PATH + 'file/singleUpload',
+                                overwriteInitial: false,
+                                initialPreviewAsData: false,
+                                initialPreview: preview,
+                                initialPreviewConfig:previewConfig
+                            });
                         }
-                        carouselUploadInput({
-                            language : 'zh',
-                            allowedPreviewTypes : [ 'image' ],
-                            allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
-                            'theme': 'explorer',
-                            'uploadUrl': Request.BASH_PATH + 'file/singleUpload',
-                            overwriteInitial: false,
-                            initialPreviewAsData: false,
-                            initialPreview: preview,
-                            initialPreviewConfig:previewConfig
-                        });
-                    }
-                });
+                    });
+                }
 
                 $("#modal-basebox").modal('show');
 

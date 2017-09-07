@@ -13,7 +13,7 @@ public class UserInfo extends GenericPo<String> {
     private String name;
     //
     private Integer age;
-    //
+    // 0 男 1 女
     private String sex;
 
     private Integer status;

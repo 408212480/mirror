@@ -69,7 +69,7 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         UserHomePage userAboutList = new UserHomePage();
         //获取当前用户的ID
         //查询但前用户的详细信息
-        UserInfo userInfo = userInfoService.selectByPk(WebUtil.getLoginUser().getId());
+        UserInfo userInfo = userInfoService.selectUserInfoByUserId(WebUtil.getLoginUser().getId());
         if (userInfo != null && userInfo.getAvatarId() != null && !"".equals(userInfo.getAvatarId())) {
             userInfo.setAvatarId(resourcesService.selectSingleImage(WebUtil.getBasePath(req), userInfo.getAvatarId()));
         }
@@ -80,8 +80,8 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         userAboutList.setAllLike(videoService.getAllLike(WebUtil.getLoginUser().getId()));
         //根据用户ID查询用户的收益排名情况
         Map ownerRank = goodsBrokerageService.getOwnerRank(WebUtil.getLoginUser().getId());
-        if (ownerRank != null && ownerRank.get("imgurl") != null) {
-            ownerRank.put("imgurl", resourcesService.selectSingleImage(WebUtil.getBasePath(req), String.valueOf(ownerRank.get("imgurl")).trim()));
+        if (ownerRank != null && ownerRank.get("ttmd5") != null) {
+            ownerRank.put("ttmd5", ResourceUtil.resourceBuildPath(req, String.valueOf(ownerRank.get("ttmd5")).trim()));
         }
         userAboutList.setUserOwnRankandBrokerage(ownerRank);
 
@@ -103,7 +103,7 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         UserHomePage userAboutList = new UserHomePage();
         //获取当前用户的ID
         //查询但前用户的详细信息
-        UserInfo userInfo = userInfoService.selectByPk(userId);
+        UserInfo userInfo = userInfoService.selectUserInfoByUserId(userId);
         if (userInfo != null && userInfo.getAvatarId() != null && !"".equals(userInfo.getAvatarId())) {
             userInfo.setAvatarId(resourcesService.selectSingleImage(WebUtil.getBasePath(req), userInfo.getAvatarId()));
         }
@@ -116,15 +116,11 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         List<Map> mapPagerResult = resourcesService.userVideoListByUserId(userId);
         if (mapPagerResult != null) {
             for (Map map : mapPagerResult) {
-                String[] videoimglist = null;
-
                 String videoimg = (String) map.get("videoimglist");
                 if (!StringUtils.isEmpty(videoimg)) {
-                    videoimglist = convertStrToArray(videoimg);
-                    map.put("videoimglist", ResourceUtil.resourceBuildPath(req, String.valueOf(videoimglist[0]).trim()));
-                    String type = ".MP4";
-                    map.put("videourl", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("videourl")).trim(), type));
+                    map.put("videoimglist", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("videoimglist")).trim()));
                 }
+                map.put("videourl", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("videourl")).trim(), ".MP4"));
             }
         }
         userAboutList.setUserVideoList(mapPagerResult);
@@ -162,7 +158,7 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
     @RequestMapping(value = "/alllist/{type}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @AccessLogger("")
     public ResponseMessage getList(@PathVariable("type") String type, QueryParam param) {
-        //查询平台所有用户的收益情况及排名
+        //
         Object data = null;
         //我的分润
         PagerParamApi pagerParam = new PagerParamApi();
