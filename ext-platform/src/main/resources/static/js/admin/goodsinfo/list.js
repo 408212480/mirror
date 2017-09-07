@@ -56,7 +56,7 @@ jQuery(document).ready(function () {
             ele.find('input[name="imgIds"]').each(function(i, item){
                 imgs += $(this).val() + ',';
             });
-            ele.find('input[name="shopId"]').each(function (i, item) {
+            ele.find('input[name="shopId"]:checked').each(function (i, item) {
                 shopId += $(this).val() + ',';
             });
             ele.find('input[name="carouselImgUrl"]').each(function(i, item){
@@ -188,6 +188,7 @@ jQuery(document).ready(function () {
             case 'base_list':
                 // 基本信息分页新增
                 setEmptyModalData();
+
                 $("#modal-basebox").modal('show');
 
                 break;
@@ -305,6 +306,15 @@ jQuery(document).ready(function () {
         $('#input_goods_shopname').val('');
         $('#input_goods_describe').val('');
 
+        $("input#kv-explorer").fileinput('destroy');
+        $("input#carousel_upload").fileinput('destroy');
+        fileUploadInput();
+        carouselUploadInput();
+        $('#goods_title').val('');
+        $('#goods_price').val('');
+        $('#goods_class_code').val('');
+        $('#goods_describe').val('');
+
         $('input[name="imgIds"]').remove();
         $('input[name="carouselImgUrl"]').remove();
     };
@@ -352,29 +362,19 @@ jQuery(document).ready(function () {
             {caption: "nature-3.jpg", size: 632762, width: "120px", url: "{$url}", key: 3}
         ]*/
     };
-    fileUploadInput();
 
     // 初始化页面文件上传
     var carouselUploadInput = function (options) {
         var defaultOption = {
-            required: true,
-            uploadUrl: Request.BASH_PATH + 'file/singleUpload',
-            dropZoneTitle: "拖拽文件到这里...",
-            language: 'zh', //设置语言
-            showUpload: false, //是否显示上传按钮
-            showRemove: false,
-            showCaption: true,//是否显示标题
-            showClose: false,
-            allowedPreviewTypes: ['image'],
-            allowedFileTypes: ['image'],
-            allowedFileExtensions: ['jpg', 'gif', 'png'],
-            maxFileCount: 1,
-            maxFileSize: 2000,
-            autoReplace: true,
-            validateInitialCount: true,
-            initialPreviewAsData: true,
-            deleteUrl: '/shop/img/delete',
-            uploadAsync: false //同步上传
+                dropZoneTitle: "拖拽文件到这里...",
+                language : 'zh',
+                allowedPreviewTypes : [ 'image' ],
+                allowedFileExtensions : [ 'jpg', 'png', 'gif' ],
+                'theme': 'explorer',
+                'uploadUrl': Request.BASH_PATH + 'file/singleUpload',
+                maxFileCount: 3,
+                overwriteInitial: false,
+                initialPreviewAsData: false
         };
         if (options == null ) {
             options = defaultOption;
@@ -394,6 +394,7 @@ jQuery(document).ready(function () {
             deleteUploadPic($("#" + id).val());
         });
     };
+    fileUploadInput();
     carouselUploadInput();
 
 
@@ -462,7 +463,8 @@ jQuery(document).ready(function () {
         var id = $(this).data('id');
         $('#goods_form').data('type', "1");
         toastr.info('加载中', opts);
-
+        $("input#kv-explorer").fileinput('destroy');
+        $("input#carousel_upload").fileinput('destroy');
         Request.get('goodsinfo/' + id, {}, function (e) {
             if (e.success) {
                 var data = e.data;
@@ -488,7 +490,6 @@ jQuery(document).ready(function () {
                                 }
                             );
                         }
-
                         fileUploadInput({
                             language : 'zh',
                             allowedPreviewTypes : [ 'image' ],
@@ -500,6 +501,26 @@ jQuery(document).ready(function () {
                             initialPreview: preview,
                             initialPreviewConfig:previewConfig
                         });
+                    }
+                });
+
+
+                Request.get('goodsinfo/pic/' + data.carouselImgUrl, {}, function (r) {
+                    if (r.success) {
+                        var preview = [];
+                        var previewConfig = [];
+                        for (var i = 0; i<r.data.length; i++) {
+                            preview.push(
+                                '<img src="' + r.data[i] +'" style="width: auto; height: 170px" class="file-preview-image" alt="" title="" />'
+                            );
+                            previewConfig.push({
+                                    caption: i+".jpg",
+                                    width: "60px",
+                                    url: 'file/',
+                                    key: i+1
+                                }
+                            );
+                        }
                         carouselUploadInput({
                             language : 'zh',
                             allowedPreviewTypes : [ 'image' ],
@@ -514,11 +535,12 @@ jQuery(document).ready(function () {
                     }
                 });
 
+                $("#modal-basebox").modal('show');
+
             }
         });
 
 
-        $("#modal-basebox").modal('show');
     });
 
     $('#base_data_table').off('click', '.btn-del').on('click', '.btn-del', function() {
@@ -831,7 +853,5 @@ jQuery(document).ready(function () {
             ]
         });
     }
-
-
 
 });

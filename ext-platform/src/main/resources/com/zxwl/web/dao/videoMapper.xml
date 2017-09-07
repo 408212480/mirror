@@ -208,7 +208,7 @@
         t_video_user
         WHERE
         t_video.u_id = t_video_user.video_id
-        )
+        ) AND t_video.status  &lt;&gt; 99
         GROUP BY
         videoId
         LIMIT #{pageIndex},#{pageSize}
@@ -246,7 +246,7 @@
         t_video_user
         WHERE
         t_video.u_id = t_video_user.video_id
-        )
+        ) AND t_video.status  &lt;&gt; 99
         GROUP BY
         videoId
     </select>

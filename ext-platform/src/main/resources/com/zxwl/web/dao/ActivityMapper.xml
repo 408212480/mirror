@@ -45,4 +45,21 @@
         <include refid="config"/>
         <include refid="BasicMapper.buildTotalSql"/>
     </select>
+    <select id="selectByUserId" parameterType="string" resultMap="ActivityResultMap">
+        SELECT t.* from t_activity t
+        LEFT JOIN t_activity_device tad ON t.u_id=tad.activityId
+        WHERE tad.userId=#{userId}
+    </select>
+    <select id="selectByUserIdPager" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="ActivityResultMap">
+        SELECT t.* from t_activity t
+        LEFT JOIN t_activity_device tad ON t.u_id=tad.activityId
+        WHERE tad.userId=#{param.user_id}
+        limit #{pageIndex}, #{pageSize}
+    </select>
+    <select id="userCount" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
+        SELECT count(*) from t_activity t
+        LEFT JOIN t_activity_device tad ON t.u_id=tad.activityId
+        WHERE tad.userId=#{param.user_id}
+    </select>
+
 </mapper>

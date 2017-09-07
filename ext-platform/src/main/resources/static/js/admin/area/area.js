@@ -7,7 +7,6 @@ $(document).ready(function () {
     var initAreaTree = function () {
         Request.get("area?paging=false&sorts[0].name=sortIndex", function (e) {
             area_list = e;
-            console.log(e);
             var tree = areaTree.init();
 
             var rootNodes = tree.getRootNodes(e);
@@ -56,8 +55,6 @@ $(document).ready(function () {
                         text: item.areaName,
                         nodes: []
                     };
-                    console.log(item.areaName);
-                    console.log(obj);
                     obj.nodes = that.getChildNodes(data, item);
                     result.push(obj);
                 }
@@ -195,9 +192,11 @@ $(document).ready(function () {
             var area_id = selected[0].id;
             var area_name = selected[0].text;
 
-            confirm('警告', '真的要删除： [' + area_name + '] 吗，如果为主节点，将会导致子节点都被删除?', function () {
+            confirm('警告', '真的要删除' + area_name + '吗，如果为主节点，将会导致子节点都被删除?', function () {
                 // 请求 module_id 删除
                 var id = area_id;
+                $('.btn-delete').attr('disabled', 'disabled');
+                $(document).mask('正在删除中...');
                 Request.delete("area/" + id, {}, function (e) {
                     if (e.success) {
                         toastr.success("删除成功");
@@ -205,6 +204,8 @@ $(document).ready(function () {
                     } else {
                         toastr.error(e.message);
                     }
+                    $('.btn-delete').removeAttr('disabled');
+                    $(document).unmask();
                 });
             });
         }
@@ -238,6 +239,69 @@ $(document).ready(function () {
             revealResults:true
         }]);
     });
+
+    (function(){
+        $.extend($.fn,{
+            mask: function(msg,maskDivClass){
+                this.unmask();
+                // 参数
+                var op = {
+                    opacity: 0.8,
+                    z: 10000,
+                    bgcolor: '#ccc'
+                };
+                var original=$(document.body);
+                var position={top:0,left:0};
+                if(this[0] && this[0]!==window.document){
+                    original=this;
+                    position=original.position();
+                }
+                // 创建一个 Mask 层，追加到对象中
+                var maskDiv=$('<div class="maskdivgen">&nbsp;</div>');
+                maskDiv.appendTo(original);
+                var maskWidth=$(window).width();
+                var maskHeight=$(window).height();
+                maskDiv.css({
+                    position: 'absolute',
+                    top: position.top,
+                    left: position.left,
+                    'z-index': op.z,
+                    width: maskWidth,
+                    height:maskHeight,
+                    'background-color': op.bgcolor,
+                    opacity: 0
+                });
+                if(maskDivClass){
+                    maskDiv.addClass(maskDivClass);
+                }
+                if(msg){
+                    var msgDiv=$('<div style="position:absolute;border:#6593cf 1px solid; padding:2px;background:#ccca"><div style="line-height:24px;border:#a3bad9 1px solid;background:white;padding:2px 10px 2px 10px">'+msg+'</div></div>');
+                    msgDiv.appendTo(maskDiv);
+                    var widthspace=(maskDiv.width()-msgDiv.width());
+                    var heightspace=(maskDiv.height()-msgDiv.height());
+                    msgDiv.css({
+                        cursor:'wait',
+                        top:(heightspace/2-2),
+                        left:(widthspace/2-2)
+                    });
+                }
+                maskDiv.fadeIn('fast', function(){
+                    // 淡入淡出效果
+                    $(this).fadeTo('slow', op.opacity);
+                })
+                return maskDiv;
+            },
+            unmask: function(){
+                var original=$(document.body);
+                if(this[0] && this[0]!==window.document){
+                    original=$(this[0]);
+                }
+                original.find("> div.maskdivgen").fadeOut('slow',0,function(){
+                    $(this).remove();
+                });
+            }
+        });
+    })();
 
 });
 

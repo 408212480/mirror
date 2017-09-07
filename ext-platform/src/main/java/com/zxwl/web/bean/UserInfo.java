@@ -38,6 +38,9 @@ public class UserInfo extends GenericPo<String> {
     //
     private java.util.Date gmtModify;
 
+    //扩展字段
+    private String userAccount;
+
     public String getName() {
         return name;
     }
@@ -148,6 +151,14 @@ public class UserInfo extends GenericPo<String> {
 
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
+    }
+
+    public String getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
     }
 
     public interface Property extends GenericPo.Property {

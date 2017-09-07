@@ -48,6 +48,24 @@ public class ResourceUtil {
         return sb.toString();
     }
 
+    /**
+     * 如果当前用户没有头像，则设置默认头像
+     * @param req
+     * @param gender
+     * @return
+     */
+    public static String getUserDefaultUserImg(HttpServletRequest req,  Integer gender) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(WebUtil.getBasePath(req));
+        // 检查用户头像是否存在
+            // check gender
+            if (gender == 0) {
+                sb.append("images/default/user-avatar0.jpg");
+            } else {
+                sb.append("images/default/user-avatar1.jpg");
+            }
+            return sb.toString();
+    }
     public static String getUserAvatar(HttpServletRequest req, String md5) {
         return ResourceUtil.getUserAvatar(req, md5, 0);
     }

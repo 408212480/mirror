@@ -1,5 +1,6 @@
 package com.zxwl.web.controller;
 
+import com.zxwl.pay.common.util.str.StringUtils;
 import com.zxwl.web.bean.ActivityDevice;
 import com.zxwl.web.bean.UserInfo;
 import com.zxwl.web.bean.po.GenericPo;
@@ -96,12 +97,12 @@ public class ActivityController extends GenericController<Activity, String> {
     public ResponseMessage add(@RequestBody ActivityDevice object) {
         List<String> userIds = object.getUserIds();
         UserInfo user=userInfoService.selectByUserId(WebUtil.getLoginUser().getId());
-        if (user.getActivityCount()==0){
+        if (user.getActivityCount()==null||user.getActivityCount()==0){
             return ResponseMessage.error("本月发布活动次数用尽,发布失败");
         }
         try {
             for (String userId : userIds) {
-                object.setCreatorId(user.getId());
+                object.setCreatorId(WebUtil.getLoginUser().getId());
                 object.setUserId(userId);
                 object.setId(GenericPo.createUID());
                 activityDeviceService.insert(object);

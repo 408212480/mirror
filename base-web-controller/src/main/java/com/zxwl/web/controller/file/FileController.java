@@ -31,6 +31,8 @@ import com.zxwl.web.core.message.ResponseMessage;
 import com.zxwl.web.service.resource.FileService;
 import com.zxwl.web.service.resource.ResourcesService;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +64,9 @@ public class FileController {
 
     @Resource
     private ResourcesService resourcesService;
+
+    @Autowired(required = false)
+    private CacheManager cacheManager;
 
     @Resource
     private FileService fileService;
@@ -406,6 +411,7 @@ public class FileController {
             if (logger.isInfoEnabled())
                 logger.info("start write file:{}", imgFile.getOriginalFilename());
             String fileName = imgFile.getOriginalFilename();
+            cacheManager.getCache("resources").clear();
             resources = fileService.saveFile(imgFile.getInputStream(), fileName);
             // resourcesList.add(resources);
         }
@@ -443,6 +449,7 @@ public class FileController {
             if (logger.isInfoEnabled())
                 logger.info("start write file:{}", file.getOriginalFilename());
             String fileName = file.getOriginalFilename();
+            cacheManager.getCache("resources").clear();
             resources = fileService.saveFile(file.getInputStream(), fileName);
             String error = "";
 //            String[] initialPreview = {"<img src='/file/image/"+resources.getId()+".jpg' class='file-preview-image' data='"+resources.getId()+"' alt='Desert' title='Desert'>"};

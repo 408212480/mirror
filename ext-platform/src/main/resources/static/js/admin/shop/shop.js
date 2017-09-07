@@ -23,10 +23,10 @@ $(document).ready(function () {
         uploadUrl: Request.BASH_PATH + 'file/shopImgUpload',
         dropZoneTitle: "拖拽文件到这里...",
         language: 'zh', //设置语言
-        showUpload: false, //是否显示上传按钮
-        showRemove: false,
+        showUpload: true, //是否显示上传按钮
+        showRemove: true,
         showCaption: true,//是否显示标题
-        showClose: false,
+        showClose: true,
         allowedPreviewTypes: ['image'],
         allowedFileTypes: ['image'],
         allowedFileExtensions: ['jpg'],
@@ -36,7 +36,7 @@ $(document).ready(function () {
         validateInitialCount: true,
         initialPreviewAsData: true,
         deleteUrl: '/shop/img/delete',
-        uploadAsync: false //同步上传
+        uploadAsync: true //同步上传
     };
 
     $("#business_url").fileinput(fileinputoption);
@@ -256,7 +256,7 @@ $(document).ready(function () {
     //添加店铺按钮事件
     $(".box-tools").off('click', '.btn-add').on('click', '.btn-add', function () {
         var selected = $('#area_tree').treeview('getSelected');
-        if (selected.length == 0) {
+        if (selected.length == 0 || selected[0].parentId == undefined) {
             toastr.info("请选择新增店铺所处区域", opts);
         }
         else {
@@ -340,48 +340,66 @@ $(document).ready(function () {
                     }
                 }
             }
-
-            var params = {
-                shopName: $("#shop_name").val(),
-                logo: logoUrl,
-                principal: $("#principal").val(),
-                principalTel: $("#principal_tel").val(),
-                legalName: $("#legal_name").val(),
-                businessUrl: businessUrl,
-                address: $("#address").val(),
-                img1: imgUrl[0],
-                img2: null,
-                img3: null,
-                areaId: selected[0].id,
-                content: window.editor.html()
-            };
-
-            if (!is_add) {      //编辑店铺
-                delete params.areaId;
+            if(!logoUrl){
+                alert('店铺logo图片未上传！请上传logo图片后再提交。');
+                btn.html("保存");
+                btn.removeAttr('disabled');
             }
-
-            if (imgUrl.length >= 2) {
-                params.img2 = imgUrl[1];
+            else if(!businessUrl){
+                alert('店铺营业执照图片未上传！请上传营业执照图片后再提交。');
+                btn.html("保存");
+                btn.removeAttr('disabled');
             }
-            if (imgUrl.length >= 3) {
-                params.img3 = imgUrl[2];
+            else if(imgUrl.length == 0){
+                alert('店铺图片未上传！请上传图片后再提交。');
+                btn.html("保存");
+                btn.removeAttr('disabled');
             }
+            else{
 
-            var req = is_add ? Request.post : Request.put;
+                var params = {
+                    shopName: $("#shop_name").val(),
+                    logo: logoUrl,
+                    principal: $("#principal").val(),
+                    principalTel: $("#principal_tel").val(),
+                    legalName: $("#legal_name").val(),
+                    businessUrl: businessUrl,
+                    address: $("#address").val(),
+                    img1: imgUrl[0],
+                    img2: null,
+                    img3: null,
+                    areaId: selected[0].id,
+                    content: window.editor.html()
+                };
 
-            req("shop/" + (is_add ? "" : shop_id), JSON.stringify(params), function (e) {
-                if (e.success) {
-                    toastr.info("保存完毕", opts);
-                    $("#modal-add").modal('hide');
-                    shop_list.draw();
-                    window.editor.html('');
-                } else {
-                    toastr.error("保存失败", opts)
+                if (!is_add) {      //编辑店铺
+                    delete params.areaId;
                 }
-            });
 
-            btn.html("保存");
-            btn.removeAttr('disabled');
+                if (imgUrl.length >= 2) {
+                    params.img2 = imgUrl[1];
+                }
+                if (imgUrl.length >= 3) {
+                    params.img3 = imgUrl[2];
+                }
+
+                var req = is_add ? Request.post : Request.put;
+
+                req("shop/" + (is_add ? "" : shop_id), JSON.stringify(params), function (e) {
+                    if (e.success) {
+                        toastr.info("保存完毕", opts);
+                        $("#modal-add").modal('hide');
+                        shop_list.draw();
+                        window.editor.html('');
+                    } else {
+                        toastr.error(e.message, opts);
+                    }
+                });
+
+                btn.html("保存");
+                btn.removeAttr('disabled');
+            }
+
         }
     });
 
@@ -472,7 +490,10 @@ $(document).ready(function () {
                     });
                 }
                 if (initialPreview.length != 0) {     //判断店铺图片是否为空
-                    $('input#img1').fileinput('refresh', {initialPreview: initialPreview, initialPreviewConfig:initialPreviewConfig});
+                    $('#img1').fileinput('destroy');
+                    fileinputoption.initialPreview = initialPreview;
+                    fileinputoption.initialPreviewConfig = initialPreviewConfig;
+                    $('#img1').fileinput(fileinputoption);
                 }
 
                 window.editor.html(data.data['content']);

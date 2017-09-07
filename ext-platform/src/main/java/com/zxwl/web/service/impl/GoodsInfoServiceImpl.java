@@ -95,13 +95,13 @@ public class GoodsInfoServiceImpl extends AbstractServiceImpl<GoodsInfo, String>
             }
         }
         // 插入 t_metadata_rel 中间表（轮播图）
-        if (data.getCarouselImgUrl() != null && !"".equals(data.getCarouselImgUrl())) {
-            String[] getCarouselImgUrl = data.getCarouselImgUrl().split(",");
-            for (int i = 0; i < getCarouselImgUrl.length; i++) {
-                if (getCarouselImgUrl[i] != null && !"".equals(getCarouselImgUrl[i])) {
+        if (data.getCarouselImgUrls() != null && !"".equals(data.getCarouselImgUrls())) {
+            String[] carouselImgUrls = data.getCarouselImgUrls().split(",");
+            for (int i = 0; i < carouselImgUrls.length; i++) {
+                if (carouselImgUrls[i] != null && !"".equals(carouselImgUrls[i])) {
                     MetaDataRel metaDataRel = new MetaDataRel();
                     metaDataRel.setId(GenericPo.createUID());
-                    metaDataRel.setDataId(getCarouselImgUrl[i].trim());
+                    metaDataRel.setDataId(carouselImgUrls[i].trim());
                     metaDataRel.setRecordId(data.getCarouselImgUrl());
                     metaDataRel.setDataType(2);
                     metaDataRel.setType(0);

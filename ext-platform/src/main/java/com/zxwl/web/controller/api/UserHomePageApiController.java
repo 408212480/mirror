@@ -145,11 +145,14 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         List<Map> mapPagerResult = goodsBrokerageService.getRank();
 
         if (mapPagerResult != null) {
-            String userImg ="";
             for (Map map : mapPagerResult) {
-                 userImg = (String) map.get("md5");
-                if (!StringUtils.isEmpty(userImg)) {
+                if (map.get("md5") != null ) {
+
                     map.put("md5", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("md5")).trim()));
+                }
+                else {
+                    //设置默认头像
+                    map.put("md5", ResourceUtil.getUserDefaultUserImg(req,(Integer) map.get("sex")));
                 }
             }
         }

@@ -42,7 +42,7 @@
     </update>
 
     <select id="selectByPk" parameterType="string" resultMap="UserInfoMap">
-        select * from t_user_info where user_id=#{userId}
+        select * from t_user_info where u_id=#{id}
     </select>
 
     <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="UserInfoMap">
@@ -54,6 +54,7 @@
         SELECT
         t_user_info.u_id AS id,
         s_user.username AS userId,
+        t_user_info.user_id as userAccount,
         t_user_info.`name` AS name,
         t_user_info.age AS age,
         t_user_info.sex AS sex,

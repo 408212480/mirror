@@ -231,7 +231,7 @@ jQuery(document).ready(function () {
         columns: [
             {
                 "sClass": "text-center",
-                "data": "userId",
+                "data": "userAccount",
                 "render": function (data, type, full, meta) {
                     return '<input  type="checkbox" name="userId" class="checkchild"  value="' + data + '" />';
                 },

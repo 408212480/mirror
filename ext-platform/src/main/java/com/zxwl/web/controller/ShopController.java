@@ -116,14 +116,14 @@ public class ShopController extends GenericController<Shop, String> {
     @Authorize(action = "U")
     @Transactional
     public ResponseMessage update(@PathVariable("id") String id, @RequestBody Shop shop) {
-        if (shop.getLogo() == null && "".equals(shop.getLogo())) {
-            throw new ValidationException("店铺logo图片不能为空！");
+        if (shop.getLogo() == null || "".equals(shop.getLogo())) {
+            return ResponseMessage.error("店铺logo不能为空", 500);
         }
-        if (shop.getBusinessUrl() == null && "".equals(shop.getBusinessUrl())) {
-            throw new ValidationException("店铺营业执照图片不能为空！");
+        if (shop.getBusinessUrl() == null || "".equals(shop.getBusinessUrl())) {
+            return ResponseMessage.error("店铺营业执照图片不能为空", 500);
         }
-        if (shop.getImg1() == null && "".equals(shop.getImg1())) {
-            throw new ValidationException("店铺图片不能为空！");
+        if (shop.getImg1() == null || "".equals(shop.getImg1())) {
+            return ResponseMessage.error("店铺图片不能为空", 500);
         }
         Shop old = getService().selectByPk(id);
         assertFound(old, "data is not found!");
@@ -209,6 +209,9 @@ public class ShopController extends GenericController<Shop, String> {
     }
 
     private ArrayList<String> getResourcesIdInContent(String content){
+        if(content == null || "".equals(content)){
+            return null;
+        }
         ArrayList<String> result = new ArrayList<>();
         String[] array = content.split("/file/image/");
         if (array.length > 1) {
@@ -296,14 +299,14 @@ public class ShopController extends GenericController<Shop, String> {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public ResponseMessage add(@RequestBody Shop shop) {
-        if (shop.getLogo() == null && "".equals(shop.getLogo())) {
-            throw new ValidationException("店铺logo图片不能为空！");
+        if (shop.getLogo() == null || "".equals(shop.getLogo())) {
+            return ResponseMessage.error("店铺logo不能为空", 500);
         }
-        if (shop.getBusinessUrl() == null && "".equals(shop.getBusinessUrl())) {
-            throw new ValidationException("店铺营业执照图片不能为空！");
+        if (shop.getBusinessUrl() == null || "".equals(shop.getBusinessUrl())) {
+            return ResponseMessage.error("店铺营业执照图片不能为空", 500);
         }
-        if (shop.getImg1() == null && "".equals(shop.getImg1())) {
-            throw new ValidationException("店铺图片不能为空！");
+        if (shop.getImg1() == null || "".equals(shop.getImg1())) {
+            return ResponseMessage.error("店铺图片不能为空", 500);
         }
 
         //设置创建用户id

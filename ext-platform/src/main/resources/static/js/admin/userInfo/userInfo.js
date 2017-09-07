@@ -187,7 +187,7 @@ $(document).ready(function () {
         var that = $(this);
         var userInfo_id = that.data('id');
         var user_name = that.data('name');
-        confirm('警告', '真的要禁用：  ' + user_name + '] 吗?', function () {
+        confirm('警告', '真的要禁用：  ' + user_name + ' 吗?', function () {
             // 请求 module_id 删除
             Request.delete("userInfo/close/" + userInfo_id, {}, function (e) {
                 if (e.success) {
@@ -205,7 +205,7 @@ $(document).ready(function () {
         var that = $(this);
         var userInfo_id = that.data('id');
         var user_name = that.data('name');
-        confirm('真的要启用： ' + user_name + '] 吗?', function () {
+        confirm('真的要启用： ' + user_name + ' 吗?', function () {
             // 请求 module_id 删除
             Request.delete("userInfo/open/" + userInfo_id, {}, function (e) {
                 if (e.success) {
@@ -219,4 +219,3 @@ $(document).ready(function () {
     });
 
 });
-
