@@ -72,6 +72,8 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         UserInfo userInfo = userInfoService.selectUserInfoByUserId(WebUtil.getLoginUser().getId());
         if (userInfo != null && userInfo.getAvatarId() != null && !"".equals(userInfo.getAvatarId())) {
             userInfo.setAvatarId(resourcesService.selectSingleImage(WebUtil.getBasePath(req), userInfo.getAvatarId()));
+        }else {
+            userInfo.setAvatarId(ResourceUtil.getUserDefaultUserImg(req, userInfo.getSex() == null ? 0 :Integer.valueOf(userInfo.getSex())));
         }
         userAboutList.setUserInfo(userInfo);
         //查询当前用户的账户余额情况
@@ -82,6 +84,9 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         Map ownerRank = goodsBrokerageService.getOwnerRank(WebUtil.getLoginUser().getId());
         if (ownerRank != null && ownerRank.get("ttmd5") != null) {
             ownerRank.put("ttmd5", ResourceUtil.resourceBuildPath(req, String.valueOf(ownerRank.get("ttmd5")).trim()));
+        }
+        else {
+            ownerRank.put("ttmd5", ResourceUtil.getUserDefaultUserImg(req, ownerRank.get("sex")==null? 0 :(Integer) ownerRank.get("sex")));
         }
         userAboutList.setUserOwnRankandBrokerage(ownerRank);
 
