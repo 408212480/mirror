@@ -1,5 +1,6 @@
 package com.zxwl.web.controller.api;
 
+import com.google.common.collect.Lists;
 import com.zxwl.pay.common.util.str.StringUtils;
 import com.zxwl.web.bean.*;
 import com.zxwl.web.bean.api.GoodsInfoPage;
@@ -96,8 +97,9 @@ public class GoodsInfoApiController extends GenericController<UserAccount, Strin
                 String basePath = WebUtil.getBasePath(req);
                 goodsInfoImgs = resourcesService.selectImages(basePath, recodId);
             }
-            goodsInfoPage.setGoodsInfoImgs(goodsInfoImgs);
+            goodsInfoPage.setGoodsInfoImgs(goodsInfoImgs  == null ? Lists.newArrayList() : goodsInfoImgs);
         }
+
         goodsInfoPage.setGoodsInfo(goodsInfo);
         goodsInfoPage.setBuySum(goodsOrderInfoService.buySum(goodsId));
         goodsInfoPage.setGoodsInfoSpecList(goodsInfoSpecService.selectByGoodsId(goodsId));
