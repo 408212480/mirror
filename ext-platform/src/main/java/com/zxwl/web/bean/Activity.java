@@ -26,6 +26,8 @@ public class Activity extends GenericPo<String> {
     public static final int status_pushed = 1;
     public static final int status_disabled = 2;
 
+//    扩展字段
+    private  String viewUrl;//h5页面地址
     /**
      * 获取 活动标题
      *
@@ -112,6 +114,14 @@ public class Activity extends GenericPo<String> {
      */
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getViewUrl() {
+        return viewUrl;
+    }
+
+    public void setViewUrl(String viewUrl) {
+        this.viewUrl = viewUrl;
     }
 
     public interface Property extends GenericPo.Property {
