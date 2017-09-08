@@ -47,8 +47,8 @@ public class GoodsOrderInfo extends GenericPo<String> {
     //上一次修改人
     private String lastChangeUser;
 
-
-    //冗余订单表、商品表、规格表、商店表等部分字段用于查询返回字段
+    //扩展字段
+    //订单表、商品表、规格表、商店表等部分字段用于查询返回字段
     //提交时间
     private java.util.Date submitTime;
     //订单状态
@@ -61,6 +61,8 @@ public class GoodsOrderInfo extends GenericPo<String> {
     private String username;
     //店铺名称
     private String shopName;
+
+    private String shopId;
     //总价
     private java.math.BigDecimal totalPrice;
     //
@@ -409,6 +411,14 @@ public class GoodsOrderInfo extends GenericPo<String> {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public String getShopId() {
+        return shopId;
+    }
+
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
     }
 
     public interface Property extends GenericPo.Property {

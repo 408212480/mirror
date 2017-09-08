@@ -165,6 +165,7 @@
 
     <select id="detail" parameterType="string" resultMap="GoodsOrderInfoResultMap">
         SELECT
+        tgo.shop_id shopId,
         tgo.total_price,
         tgo.order_status,
         tgo.pay_type,
