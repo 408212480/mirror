@@ -103,7 +103,7 @@ $(document).ready(function () {
         "autoWidth": false,
         "bStateSave": true,
         "bFilter": false,
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};
@@ -191,7 +191,7 @@ $(document).ready(function () {
         "autoWidth": false,
         "bStateSave": true,
         "bFilter": true, //搜索栏
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};

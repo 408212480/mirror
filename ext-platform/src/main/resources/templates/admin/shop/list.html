@@ -95,12 +95,27 @@
 
 <script th:src="@{/plugins/kindeditor/kindeditor-all.js}"></script>
 <script th:src="@{/plugins/kindeditor/lang/zh-CN.js}"></script>
-<script>
+
+<script th:inline="javascript">
+    // 用户权限
+    var accessCreate = [[${user.hasAccessModuleAction('module', 'C')}]];
+    var accessUpdate = [[${user.hasAccessModuleAction('module', 'U')}]];
+    var accessDelete = [[${user.hasAccessModuleAction('module', 'D')}]];
+
     KindEditor.ready(function(K) {
         window.editor = K.create('#content',{
             uploadJson : 'file/imageUpload',
             formatUploadUrl: false,
-            allowFileManager : false
+            allowFileManager : false,
+            items: [
+                'source', '|', 'undo', 'redo', '|', 'preview', 'template', 'code', 'cut', 'copy', 'paste',
+                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image',
+                'table', 'hr', 'emoticons', 'pagebreak','anchor', 'link', 'unlink', '|', 'about'
+            ]
         });
     });
 </script>

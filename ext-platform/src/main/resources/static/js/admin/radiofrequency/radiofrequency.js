@@ -161,7 +161,7 @@ $(document).ready(function () {
         "info": true,
         "autoWidth": false,
         "bStateSave": true,
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};

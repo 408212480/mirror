@@ -9,7 +9,7 @@ $(document).ready(function () {
         "autoWidth": true,
         "bStateSave": true,
         "bFilter": false, //搜索栏
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};

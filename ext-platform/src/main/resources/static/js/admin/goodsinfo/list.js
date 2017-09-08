@@ -213,7 +213,7 @@ jQuery(document).ready(function () {
         "bStateSave": true,
         "bFilter": true, //搜索栏
         "bSort": false,
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};
@@ -635,7 +635,7 @@ jQuery(document).ready(function () {
             "bFilter": true, //搜索栏
             "destroy": true,
             "bSort": false,
-            "serverSide": true,
+            // "serverSide": true,
             "sPaginationType": "full_numbers",
             "ajax": function (data, callback, settings) {
                 var param = {};
@@ -815,7 +815,7 @@ jQuery(document).ready(function () {
             "bFilter": true, //搜索栏
             "destroy": true,
             "bSort": false,
-            "serverSide": true,
+            // "serverSide": true,
             "sPaginationType": "full_numbers",
             "ajax": function (data, callback, settings) {
                 var param = {};

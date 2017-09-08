@@ -16,7 +16,7 @@ $(document).ready(function () {
                 //     alert(data.text + "->  parentId :" + data.parentId);
                 // }
             });
-            $('#area_tree').treeview('selectNode', [0]);
+            // $('#area_tree').treeview('selectNode', [0]);
         });
     };
 
@@ -83,13 +83,6 @@ $(document).ready(function () {
             });
             return result;
         }
-    };
-
-    var switchButtonInit = function () {
-        // size : null, 'mini', 'small', 'normal', 'large'
-        $("input[type='checkbox']").bootstrapSwitch({
-            size: 'mini'
-        });
     };
 
 
@@ -160,7 +153,7 @@ $(document).ready(function () {
     });
 
     //添加区域按钮事件
-    $(".box-tools").off('click', '.btn-add').on('click', '.btn-add', function () {
+    $(".box-body").off('click', '.btn-add').on('click', '.btn-add', function () {
         $(".modal-title").html("新增区域");
         $("#modal-add").modal('show');
         $("input#area_name").val("");
@@ -168,7 +161,7 @@ $(document).ready(function () {
     });
 
     //修改区域按钮事件
-    $(".box-tools").off('click', '.btn-modify').on('click', '.btn-modify', function () {
+    $(".box-body").off('click', '.btn-modify').on('click', '.btn-modify', function () {
         var selected = $('#area_tree').treeview('getSelected');
         if (selected.length == 0) {
             toastr.info("请选择需要修改的节点", opts);
@@ -183,7 +176,7 @@ $(document).ready(function () {
     });
 
     //删除区域按钮事件
-    $(".box-tools").off('click', '.btn-delete').on('click', '.btn-delete', function () {
+    $(".box-body").off('click', '.btn-delete').on('click', '.btn-delete', function () {
         var selected = $('#area_tree').treeview('getSelected');
         if (selected.length == 0) {
             toastr.info("请选择需要删除的节点", opts);
@@ -193,7 +186,6 @@ $(document).ready(function () {
             var area_name = selected[0].text;
 
             confirm('警告', '真的要删除' + area_name + '吗，如果为主节点，将会导致子节点都被删除?', function () {
-                // 请求 module_id 删除
                 var id = area_id;
                 $('.btn-delete').attr('disabled', 'disabled');
                 $(document).mask('正在删除中...');
@@ -212,7 +204,7 @@ $(document).ready(function () {
 
     });
 
-    $(".form_control").on("keydown",function(event) {
+    $("#search").on("keydown",function(event) {
         var e = event || window.event || arguments.callee.caller.arguments[0];
         if (e && e.keyCode == 27) { // 按 Esc
             //要做的事情
@@ -221,8 +213,7 @@ $(document).ready(function () {
             //要做的事情
         }
         if (e && e.keyCode == 13) { // enter 键
-            alert("此处回车触发搜索事件");
-            var areaName = $("#search_content").val();
+            var areaName = $("#search").val();
             $("#area_tree").treeview('search', [areaName,{
                 ignoreCase:true,
                 exactMatch:false,
