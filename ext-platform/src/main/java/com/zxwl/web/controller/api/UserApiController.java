@@ -29,6 +29,8 @@ import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.zxwl.web.bean.po.GenericPo.createUID;
 
@@ -41,6 +43,8 @@ import static com.zxwl.web.bean.po.GenericPo.createUID;
 @AccessLogger("移动端用户管理")
 //@Authorize(module = "user")
 public class UserApiController extends GenericController<User, String> {
+
+    Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(17[0-9])|(18[0,5-9]))\\d{8}$");
 
     @Resource
     private UserService userService;
@@ -143,6 +147,11 @@ public class UserApiController extends GenericController<User, String> {
     @AccessLogger("获取短信验证码")
     public ResponseMessage pushSMS(@PathVariable("telephone") String telephone, HttpServletRequest req) throws IOException {
         // SMSClient sms=SMSClient.getClient();
+        // 验证手机号格式是否正确
+        Matcher m = p.matcher(telephone);
+        if (!m.matches()) {
+            return ResponseMessage.error("手机号格式不正确");
+        }
         // 生成随机的 6 位数字验证码
         String verifyCode = RandomUtil.randomNumber(4);
         String content="尊贵的用户您好！您的验证码为："+verifyCode+"【知晓物联】";
