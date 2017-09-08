@@ -39,13 +39,13 @@
         select * from t_video_user where u_id=#{id}
     </select>
     <select id="userVideoListInfo"  parameterType="com.zxwl.web.bean.api.PagerParamApi" resultType="java.util.HashMap">
-        SELECT t3.video_id,t3.user_id,t3.sex, t3.goods_id, t3.like_num, t3.avatar_id AS usermd5, t3.shop_name, t3.address, t3.dividend, t3.videomd5, t3.videoimglist, (CASE WHEN ISNULL(tvur.user_id) THEN '0' ELSE '1' END ) as isUpvote FROM
+        SELECT   t3.video_id,t3.user_id,t3.sex, t3.goods_id,t3.shop_id, t3.like_num, t3.avatar_id AS usermd5, t3.shop_name, t3.address, t3.dividend, t3.videomd5, t3.videoimglist, (CASE WHEN ISNULL(tvur.user_id) THEN '0' ELSE '1' END ) as isUpvote FROM
 
-        ( SELECT t1.u_id AS video_id,t1.user_id,t1.sex, t1.goods_id, IFNULL(t1.like_num, 0) AS like_num, t1.avatar_id, t1.shop_name, t1.address, IFNULL( t1.dividend, 0) AS dividend, t1.videomd5, t2.videoimglist FROM
+        ( SELECT t1.u_id AS video_id,t1.shop_id,t1.user_id,t1.sex, t1.goods_id, IFNULL(t1.like_num, 0) AS like_num, t1.avatar_id, t1.shop_name, t1.address, IFNULL( t1.dividend, 0) AS dividend, t1.videomd5, t2.videoimglist FROM
         ( SELECT
-        t4.u_id ,t4.user_id, t4.sex, tgb.dividend,  t4.goods_id , t4.like_num,t4.avatar_id, t4.shop_name,t4.address, t4.videomd5 from
+        t4.u_id ,t4.shop_id,t4.user_id, t4.sex, tgb.dividend,  t4.goods_id , t4.like_num,t4.avatar_id, t4.shop_name,t4.address, t4.videomd5 from
         ( SELECT
-        tv.u_id ,tui.user_id, tui.sex, tvu.goods_id , tv.like_num,tui.avatar_id, ts.shop_name,
+        tv.u_id ,tui.user_id, tui.sex,tvu.shop_id, tvu.goods_id , tv.like_num,tui.avatar_id, ts.shop_name,
         ts.address,srv.path AS videopath,  srv.md5 AS videomd5, tgp.u_id AS tgpuid
         FROM  t_video tv, t_video_user tvu,t_user_info tui,t_metadata_rel tmrv,s_resources srv,t_shop ts,t_goods_percentage tgp
         WHERE  tvu.video_id= tv.u_id AND tv.`status`=3 AND tvu.user_id= tui.user_id
@@ -269,5 +269,11 @@
     <select id="total" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">
         <include refid="config"/>
         <include refid="BasicMapper.buildTotalSql"/>
+    </select>
+
+    <select id="shopInfo" parameterType="string" resultType="string">
+        SELECT t.
+        FROM t_shop t
+        WHERE t.u_id=(SELECT tv.shop_id FROM t_video_user tv WHERE tv.video_id=#{videoId})
     </select>
 </mapper>

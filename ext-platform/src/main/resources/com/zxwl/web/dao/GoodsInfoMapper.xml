@@ -56,12 +56,10 @@
 
     <select id="selectByPk" parameterType="string" resultMap="GoodsInfoResultMap">
         SELECT
-        t.*, s.shop_id shopId
+        t.*
         FROM
-        t_goods_info t,
-        t_shop_goods s
+        t_goods_info t
         where t.u_id=#{id}
-        AND s.goods_id = #{id}
     </select>
 
     <select id="select" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="GoodsInfoResultMap">
