@@ -2,6 +2,8 @@ package com.zxwl.web.bean;
 
 import com.zxwl.web.bean.po.GenericPo;
 
+import java.util.Date;
+
 /**
  * 店铺信息
  * Created by generator Aug 14, 2017 7:09:06 AM
@@ -15,6 +17,8 @@ public class Activity extends GenericPo<String> {
     private java.util.Date begintime;
     //结束时间
     private java.util.Date endtime;
+    //推送时间
+    private java.util.Date pushtime;
     //0 无状态（当前状态可推送）  1 已推送  2 禁用
     private int status;
 
@@ -84,6 +88,14 @@ public class Activity extends GenericPo<String> {
      */
     public void setEndtime(java.util.Date endtime) {
         this.endtime = endtime;
+    }
+
+    public Date getPushtime() {
+        return pushtime;
+    }
+
+    public void setPushtime(Date pushtime) {
+        this.pushtime = pushtime;
     }
 
     /**

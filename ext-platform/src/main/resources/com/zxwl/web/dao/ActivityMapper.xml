@@ -9,7 +9,8 @@
             <result property="content" column="content" javaType="String" jdbcType="CLOB"/>
             <result property="begintime" column="begintime" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
             <result property="endtime" column="endtime" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
-            <result property="status" column="status" javaType="int" jdbcType="TINYINT"/>
+        <result property="pushtime" column="pushtime" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" javaType="int" jdbcType="TINYINT"/>
     </resultMap>
 
     <!--用于动态生成sql所需的配置-->
@@ -53,7 +54,7 @@
     <select id="selectByUserIdPager" parameterType="com.zxwl.web.bean.common.QueryParam" resultMap="ActivityResultMap">
         SELECT t.* from t_activity t
         LEFT JOIN t_activity_device tad ON t.u_id=tad.activityId
-        WHERE tad.userId=#{param.user_id}
+        WHERE tad.userId=#{param.user_id} and  t.status=1
         limit #{pageIndex}, #{pageSize}
     </select>
     <select id="userCount" parameterType="com.zxwl.web.bean.common.QueryParam" resultType="int">

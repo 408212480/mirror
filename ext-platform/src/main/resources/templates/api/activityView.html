@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <base th:href="${#httpServletRequest.contextPath} + '/'" href=""/>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script th:inline="javascript">
+        var BASE_PATH = [[${#httpServletRequest.contextPath + '/'}]];
+        var CURRENT_PAGE = [[${path}]];
+    </script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="content-wrapper">
+        <section class="content">
+            <div class="shop-head">
+                <div class="col-xs-12 text-center" id="title"
+                     style="padding: 15px 0;font-size: 22px;font-family: HiraginoSansGB-W6,serif;color:#333;">
+                </div>
+                <div class="col-xs-12 text-left" id="pushtime"
+                     style="font-size: 14px;font-family: HiraginoSansGB-W3,serif;color:#999;">
+                </div>
+            </div>
+            <div id="content" style="padding-top: 35px;">
+            </div>
+        </section>
+    </div>
+</div>
+<script th:src="@{/plugins/jQuery/jquery-3.1.1.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/api/activityView.js}"></script>
+</body>
+</html>

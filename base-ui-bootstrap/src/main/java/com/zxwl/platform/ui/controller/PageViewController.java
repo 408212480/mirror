@@ -43,6 +43,12 @@ public class PageViewController {
     public ModelAndView shopView(String uri) throws UnsupportedEncodingException {
         return new ModelAndView("api/view");
     }
+
+    @RequestMapping(value = "/api/activityView.html", method = RequestMethod.GET)
+    public ModelAndView activityView(String uri) throws UnsupportedEncodingException {
+        return new ModelAndView("api/activityView");
+    }
+
     @RequestMapping(value = "/admin/profile.html", method = RequestMethod.GET)
     @Authorize
     public ModelAndView profile(HttpServletRequest request,

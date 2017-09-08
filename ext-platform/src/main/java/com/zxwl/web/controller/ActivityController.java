@@ -21,6 +21,7 @@ import com.zxwl.web.service.ActivityService;
 
 import javax.annotation.Resource;
 
+import java.util.Date;
 import java.util.List;
 
 import static com.zxwl.web.core.message.ResponseMessage.ok;
@@ -97,9 +98,14 @@ public class ActivityController extends GenericController<Activity, String> {
     public ResponseMessage add(@RequestBody ActivityDevice object) {
         List<String> userIds = object.getUserIds();
         UserInfo user=userInfoService.selectByUserId(WebUtil.getLoginUser().getId());
+        Activity activity=activityService.selectByPk(object.getActivityid());
         if (user.getActivityCount()==null||user.getActivityCount()==0){
             return ResponseMessage.error("本月发布活动次数用尽,发布失败");
         }
+        if (activity==null)
+            return ResponseMessage.error("activity not found");
+        if (activity.getStatus()==Activity.status_disabled)
+            return  ResponseMessage.error("已禁用活动，不可发布");
         try {
             for (String userId : userIds) {
                 object.setCreatorId(WebUtil.getLoginUser().getId());
@@ -110,6 +116,9 @@ public class ActivityController extends GenericController<Activity, String> {
         } catch (Exception e) {
             return ResponseMessage.error("发布失败");
         }
+        activity.setStatus(Activity.status_pushed);
+        activity.setPushtime(new Date());
+        activityService.update(activity);
         user.setActivityCount((user.getActivityCount()-1));
         userInfoService.update(user);
         return ok();

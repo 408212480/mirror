@@ -28,7 +28,6 @@ import static com.zxwl.web.core.message.ResponseMessage.ok;
 @RestController
 @RequestMapping(value = "/api/Activity")
 @AccessLogger("活动信息")
-@Authorize
 public class ActivityApiController extends GenericController<Activity, String> {
 
     @Resource
@@ -57,5 +56,19 @@ public class ActivityApiController extends GenericController<Activity, String> {
         return ok(data)
                 .include(getPOType(), param.getIncludes())
                 .exclude(getPOType(), param.getExcludes());
+    }
+
+    /**
+     * 根据id（主键）查询数据
+     *
+     * @param id 主键
+     * @return 请求结果
+     */
+    @RequestMapping(value = "/view/{id}",method = RequestMethod.GET)
+    public ResponseMessage info(@PathVariable("id") String id) {
+        Activity po = getService().selectByPk(id);
+        if (po == null)
+            return ResponseMessage.error("data not found");
+        return ok(po);
     }
 }
