@@ -25,7 +25,7 @@ List<GoodsInfoSpec> getShopGoods(QueryParam param);
      * @param goodsId
      * @return
      */
-    int statisticsAllGoodsQuality(String goodsId);
+    Integer statisticsAllGoodsQuality(String goodsId);
 
     /**
      * goodsSpc color list
