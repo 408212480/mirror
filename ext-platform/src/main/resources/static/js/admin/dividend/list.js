@@ -123,7 +123,7 @@ jQuery(document).ready(function () {
         "info": true,
         "autoWidth": false,
         "bStateSave": true,
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};
@@ -200,7 +200,7 @@ jQuery(document).ready(function () {
         "autoWidth": false,
         "bStateSave": true,
         "bFilter": true, //搜索栏
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};

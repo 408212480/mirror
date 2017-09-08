@@ -156,7 +156,7 @@ jQuery(document).ready(function () {
         "info": true,
         "autoWidth": false,
         "bStateSave": true,
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};
@@ -422,7 +422,7 @@ $(document).ready(function () {
         "autoWidth": false,
         "bStateSave": true,
         "bFilter": true, //搜索栏
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};
@@ -565,7 +565,7 @@ var loadDeviceDist = function (shopId) {
         "info": true,
         "autoWidth": false,
         "bStateSave": true,
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "retrieve": true,
         "ajax": function (data, callback, settings) {
@@ -706,9 +706,7 @@ var CONSTANT = {
             // 取消默认排序查询,否则复选框一列会出现小箭头
             order: [],
             // 隐藏加载提示,自行处理
-            processing: false,
-            // 启用服务器端分页
-            serverSide: true
+            processing: false
         },
         COLUMN: {
             // 复选框单元格

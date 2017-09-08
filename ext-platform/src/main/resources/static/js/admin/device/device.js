@@ -202,7 +202,7 @@ $(document).ready(function () {
         "info": true,
         "autoWidth": false,
         "bStateSave": true,
-        "serverSide": true,
+        // "serverSide": true,
         "sPaginationType": "full_numbers",
         "ajax": function (data, callback, settings) {
             var param = {};
@@ -330,7 +330,7 @@ $(document).ready(function () {
             "info": true,
             "autoWidth": false,
             "bStateSave": true,
-            "serverSide": true,
+            // "serverSide": true,
             "sPaginationType": "full_numbers",
             "retrieve": true,
             "ajax": function (data, callback, settings) {

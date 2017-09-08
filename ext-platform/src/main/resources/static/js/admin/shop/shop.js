@@ -78,12 +78,10 @@ $(document).ready(function () {
                 "lengthChange": true,
                 "searching": true,
                 "ordering": true,
-                "info": true,
+                "info": false,
                 "autoWidth": false,
                 "bStateSave": true,
-                "bFilter": true, //搜索栏
-                "serverSide": true,
-                "sPaginationType": "full_numbers",
+                // "serverSide": true,
                 "ajax": function (data, callback, settings) {
                     var param = {};
                     param.pageSize = data.length;
@@ -134,7 +132,7 @@ $(document).ready(function () {
                     {data: "img1"},
                     {data: null}
                 ],
-                "order": [[1, 'asc']],
+                // "order": [[1, 'asc']],
                 "aoColumnDefs": [
                     {
                         "sClass": "center",
@@ -172,12 +170,21 @@ $(document).ready(function () {
                         "sClass": "center",
                         "aTargets": [8],
                         "mData": "id",
-                        "mRender": function (a, b, c, d) {//a表示statCleanRevampId对应的值，c表示当前记录行对象
-                            // 还未进行修改 删除 权限判断
-                            var buttons = '';
-                            buttons += '<button type="button" data-id="' + c.id + '" class="btn btn-default btn-sm btn-info">详情</button>\n';
-                            buttons += '<button type="button" data-id="' + c.id + '" data-shopname="' + c.shopName + '" class="btn btn-default btn-sm btn-edit">编辑</button>';
-                            buttons += '<button type="button" data-id="' + c.id + '" data-shopname="' + c.shopName + '" class="btn btn-default btn-sm btn-delete">删除</button>';
+                        "mRender": function (a, b, c, d) {//c表示当前记录行对象
+
+                            var buttons = '<div class="btn-group">';
+                            buttons += '<div class="btn-group">';
+                            buttons += '<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">操作';
+                            buttons += '<span class="caret"></span></button>';
+                            buttons += '<ul class="dropdown-menu">';
+                            buttons += '<li><a href="javascript:;" class="btn-info" data-id="'+c.id+'">详情</a></li>';
+                            if (accessUpdate) {
+                                buttons += '<li><a href="javascript:;" class="btn-edit" data-id="'+c.id+'" data-shopname="' + c.shopName + '">编辑</a></li>';
+                            }
+                            if (accessDelete) {
+                                buttons += '<li><a href="javascript:;" class="btn-delete" data-id="'+c.id+'" data-shopname="' + c.shopName + '">删除</a></li>';
+                            }
+                            buttons += '</ul></div></div>';
 
                             return buttons;
                         }
