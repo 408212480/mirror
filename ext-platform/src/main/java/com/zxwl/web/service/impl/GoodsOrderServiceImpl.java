@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,15 +30,15 @@ import java.util.Map;
 public class GoodsOrderServiceImpl extends AbstractServiceImpl<GoodsOrder, String> implements GoodsOrderService {
 
     @Resource
-    protected GoodsOrderMapper goodsOrderMapper;
+    private GoodsOrderMapper goodsOrderMapper;
     @Resource
-    protected GoodsInfoMapper goodsInfoMapper;
+    private GoodsInfoMapper goodsInfoMapper;
     @Resource
-    protected OrderAddressMapper orderAddressMapper;
+    private OrderAddressMapper orderAddressMapper;
     @Resource
-    protected GoodsOrderInfoMapper goodsOrderInfoMapper;
+    private GoodsOrderInfoMapper goodsOrderInfoMapper;
     @Resource
-    protected GoodsInfoSpecService goodsInfoSpecService;
+    private GoodsInfoSpecService goodsInfoSpecService;
     @Override
     protected GoodsOrderMapper getMapper() {
         return this.goodsOrderMapper;
@@ -57,14 +58,16 @@ public class GoodsOrderServiceImpl extends AbstractServiceImpl<GoodsOrder, Strin
     public int  update(List<GoodsOrder> data) {
         return super.update(data);
     }
+
     @Override
     @Transactional
     public String insert(Map<String, Object> params) {
+        DecimalFormat df = new DecimalFormat("######0.00");
         String color=String.valueOf(params.get("color"));
         String size=String.valueOf(params.get("size"));
         String goodsId=String.valueOf(params.get("goodsId"));
         String acount=String.valueOf(params.get("acount"));
-        //获取关联表冗余字段
+        //获取关联表扩展字段
         GoodsInfoSpec goodsInfoSpec=new GoodsInfoSpec();
         goodsInfoSpec.setColor(color);
         goodsInfoSpec.setSize(size);
@@ -73,16 +76,22 @@ public class GoodsOrderServiceImpl extends AbstractServiceImpl<GoodsOrder, Strin
         GoodsOrderInfo goodsOrderInfo=new GoodsOrderInfo();
         GoodsInfo goodsInfo=goodsInfoMapper.selectByPk(goodsId);
         OrderAddress orderAddress=orderAddressMapper.selectByPk(String.valueOf(params.get("orderAddressId")));
-        if (goodsInfo==null||orderAddress==null||goodsInfoSpec==null)
-            return "404";
+        if (goodsInfo==null)
+            return "GoodsInfoNull";
+        if(orderAddress==null)
+            return "orderAddressNull";
+        if(goodsInfoSpec==null)
+            return "GoodsInfoSpecNull";
         if (goodsInfoSpec.getQuality()-Integer.parseInt(acount)<0)
             return "500";
+//        计算订单总价
+        String totalPrice = df.format(goodsInfo.getPrice() * Double.parseDouble(acount));
         //创建订单
         GoodsOrder goodsOrder=new GoodsOrder();
         goodsOrder.setOrderStatus(GoodsOrder.order_add);
         goodsOrder.setUserId(WebUtil.getLoginUser().getId());
         goodsOrder.setShopId(params.get("shopId").toString());
-        goodsOrder.setTotalPrice(new BigDecimal(params.get("totalPrice").toString()));
+        goodsOrder.setTotalPrice(new BigDecimal(totalPrice));
         goodsOrder.setId(GenericPo.createUID());
         goodsOrder.setGmtCreate(new Date());
         goodsOrder.setGmtModify(new Date());

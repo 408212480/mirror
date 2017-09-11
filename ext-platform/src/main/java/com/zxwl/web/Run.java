@@ -20,7 +20,7 @@ import java.io.IOException;
 @EnableTransactionManagement(proxyTargetClass = true)
 @EnableCaching
 @Controller
-@MapperScan({"com.zxwl.platform.dao", "com.zxwl.web.dao","com.zxwl.pay.api.dao"})
+@MapperScan({"com.zxwl.pay.api.dao"})
 //@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600)
 public class Run {
 
