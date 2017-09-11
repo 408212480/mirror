@@ -40,7 +40,7 @@
     </select>
     <select id="getRank" parameterType="string" resultType="java.util.HashMap">
         <!--进行排名处理的查询,金额相等则排名相同-->
-        SELECT t1.`name`, IFNULL(t1.sex,0) AS sex, t4.md5,sum(IFNULL(t2.dividend, 0)) AS `allbrokerage`
+        SELECT t1.`name`, IFNULL(t1.sex,0) AS sex, t4.md5,sum(IFNULL(t2.dividend, 0.00)) AS `allbrokerage`
         FROM t_user_info t1
         LEFT JOIN t_goods_brokerage t2 ON t1.user_id = t2.user_id
         LEFT JOIN t_metadata_rel t3 ON t1.avatar_id = t3.record_id
@@ -52,7 +52,7 @@
         SELECT t6.ttname,t6.ttuserid,t6.ttmd5, t6.ttallbokerage, t6.rank from
         (SELECT tt.tname as ttname, tt.userid as ttuserid, tt.tmd5 as ttmd5, tt.allbrokerage as ttallbokerage, @rownum := @rownum + 1 AS rank
         FROM
-        (SELECT t1.`name` AS tname, t1.user_id AS userid,  t4.md5 AS tmd5, sum(IFNULL(t2.dividend, 0)) AS `allbrokerage`
+        (SELECT t1.`name` AS tname, t1.user_id AS userid,  t4.md5 AS tmd5, sum(IFNULL(t2.dividend, 0.00)) AS `allbrokerage`
         FROM t_user_info t1
         LEFT JOIN t_goods_brokerage t2 ON t1.user_id = t2.user_id
         LEFT JOIN t_metadata_rel t3 ON t1.avatar_id = t3.record_id

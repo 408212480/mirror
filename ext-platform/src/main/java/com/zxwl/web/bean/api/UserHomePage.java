@@ -14,7 +14,7 @@ public class UserHomePage {
 
     private UserInfo userInfo;
 
-    private BigDecimal allMoney;
+    private String allMoney;
 
     private List<Map>  mapList;
 
@@ -40,11 +40,11 @@ public class UserHomePage {
         this.userInfo = userInfo;
     }
 
-    public BigDecimal getAllMoney() {
+    public String getAllMoney() {
         return allMoney;
     }
 
-    public void setAllMoney(BigDecimal allMoney) {
+    public void setAllMoney(String allMoney) {
         this.allMoney = allMoney;
     }
 

@@ -77,7 +77,12 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         }
         userAboutList.setUserInfo(userInfo);
         //查询当前用户的账户余额情况
-        userAboutList.setAllMoney(userAccountService.getGAllMoney(WebUtil.getLoginUser().getId()));
+        String money =userAccountService.getGAllMoney(WebUtil.getLoginUser().getId()).toString();
+        if(money.equals("0")||money.equals("0.0")||money.equals("0.00")){
+            userAboutList.setAllMoney("0.00");
+        }else {
+            userAboutList.setAllMoney(String.valueOf(userAccountService.getGAllMoney(WebUtil.getLoginUser().getId())));
+        }
         //查询当前用户的点赞数
         userAboutList.setAllLike(videoService.getAllLike(WebUtil.getLoginUser().getId()));
         //根据用户ID查询用户的收益排名情况
@@ -86,6 +91,8 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
             ownerRank.put("ttmd5", ResourceUtil.resourceBuildPath(req, String.valueOf(ownerRank.get("ttmd5")).trim()));
         }
         else {
+
+            ownerRank.put("ttallbokerage", ownerRank.get("ttallbokerage")==null? 0.00 :(Integer) ownerRank.get("ttallbokerage"));
             ownerRank.put("ttmd5", ResourceUtil.getUserDefaultUserImg(req, ownerRank.get("sex")==null? 0 :(Integer) ownerRank.get("sex")));
         }
         userAboutList.setUserOwnRankandBrokerage(ownerRank);
@@ -116,7 +123,7 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         }
         userAboutList.setUserInfo(userInfo);
         //查询当前用户的账户余额情况
-        userAboutList.setAllMoney(userAccountService.getGAllMoney(userId));
+//        userAboutList.setAllMoney(userAccountService.getGAllMoney(userId));
         //查询当前用户的点赞数
         userAboutList.setAllLike(videoService.getAllLike(userId));
         //获取用户的视频列表
@@ -138,6 +145,7 @@ public class UserHomePageApiController extends GenericController<UserAccount, St
         }else {
             ownerRank.put("ttmd5", ResourceUtil.getUserDefaultUserImg(req, ownerRank.get("sex")==null? 0 :(Integer) ownerRank.get("sex")));
         }
+        ownerRank.put("ttallbokerage", ownerRank.get("ttallbokerage")==null? 0.00 : ownerRank.get("ttallbokerage"));
         userAboutList.setUserOwnRankandBrokerage(ownerRank);
 
         return ok(userAboutList);
