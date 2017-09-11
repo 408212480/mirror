@@ -69,8 +69,14 @@ public class GoodsInfoSpecServiceImpl extends AbstractServiceImpl<GoodsInfoSpec,
      * @return
      */
     @Override
-    public int statisticsAllGoodsQuality(String goodsId) {
-        return getMapper().statisticsAllGoodsQuality(goodsId);
+    public Integer statisticsAllGoodsQuality(String goodsId) {
+      Integer statisticsAllGoodsQuality = getMapper().statisticsAllGoodsQuality(goodsId);
+      if (statisticsAllGoodsQuality==null){
+          return 0;
+      }
+      else
+          return statisticsAllGoodsQuality;
+
     }
 
     @Override

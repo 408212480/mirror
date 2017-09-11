@@ -5,6 +5,7 @@ import com.zxwl.web.bean.GoodsInfoSpec;
 import com.zxwl.web.bean.UserInfo;
 import com.zxwl.web.bean.common.PagerResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,9 @@ import java.util.Map;
  * Created by xianghugui on 02/08/2017.
  */
 public class GoodsInfoPage {
-    private List<String> mapGoodsImgList;
+    private List<String> mapGoodsImgList = new ArrayList<>();
 
-    private List<String> goodsInfoImgs;
+    private List<String> goodsInfoImgs = new ArrayList<>();
 
     private GoodsInfo goodsInfo;
 
@@ -32,7 +33,7 @@ public class GoodsInfoPage {
     //已购数量
     private int goodsStasticsQuality;
 
-    PagerResult<Map> commentList;
+    PagerResult<Map> commentList = new PagerResult<>();
 
     public List<String> getGoodsInfoImgs() {
         return goodsInfoImgs;

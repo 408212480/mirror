@@ -41,7 +41,7 @@
         select size, color, quality, goods_id from t_goods_info_spec where goods_id=#{id}
     </select>
 
-    <select id="statisticsAllGoodsQuality" parameterType="string" resultType="int">
+    <select id="statisticsAllGoodsQuality" parameterType="string" resultType="java.lang.Integer">
         select SUM(quality) AS allQuality from t_goods_info_spec where goods_id=#{goodsId}
     </select>
     <select id="goodsColorList" parameterType="string" resultType="java.util.HashMap">

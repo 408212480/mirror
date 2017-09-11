@@ -27,7 +27,7 @@ public interface GoodsInfoSpecMapper extends GenericMapper<GoodsInfoSpec, String
      * @param goodsId
      * @return
      */
-    int statisticsAllGoodsQuality(String goodsId);
+    Integer statisticsAllGoodsQuality(String goodsId);
 
     /**
      * goodsSpc color list
