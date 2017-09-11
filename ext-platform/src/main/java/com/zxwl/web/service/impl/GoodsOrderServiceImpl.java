@@ -67,6 +67,8 @@ public class GoodsOrderServiceImpl extends AbstractServiceImpl<GoodsOrder, Strin
         String size=String.valueOf(params.get("size"));
         String goodsId=String.valueOf(params.get("goodsId"));
         String acount=String.valueOf(params.get("acount"));
+        String orderAddressId=String.valueOf(params.get("orderAddressId"));
+        String shopId =String.valueOf(params.get("shopId"));
         //获取关联表扩展字段
         GoodsInfoSpec goodsInfoSpec=new GoodsInfoSpec();
         goodsInfoSpec.setColor(color);
@@ -75,7 +77,7 @@ public class GoodsOrderServiceImpl extends AbstractServiceImpl<GoodsOrder, Strin
         goodsInfoSpec= goodsInfoSpecService.selectOne(goodsInfoSpec);
         GoodsOrderInfo goodsOrderInfo=new GoodsOrderInfo();
         GoodsInfo goodsInfo=goodsInfoMapper.selectByPk(goodsId);
-        OrderAddress orderAddress=orderAddressMapper.selectByPk(String.valueOf(params.get("orderAddressId")));
+        OrderAddress orderAddress=orderAddressMapper.selectByPk(orderAddressId);
         if (goodsInfo==null)
             return "GoodsInfoNull";
         if(orderAddress==null)
@@ -90,7 +92,7 @@ public class GoodsOrderServiceImpl extends AbstractServiceImpl<GoodsOrder, Strin
         GoodsOrder goodsOrder=new GoodsOrder();
         goodsOrder.setOrderStatus(GoodsOrder.order_add);
         goodsOrder.setUserId(WebUtil.getLoginUser().getId());
-        goodsOrder.setShopId(params.get("shopId").toString());
+        goodsOrder.setShopId(shopId);
         goodsOrder.setTotalPrice(new BigDecimal(totalPrice));
         goodsOrder.setId(GenericPo.createUID());
         goodsOrder.setGmtCreate(new Date());

@@ -53,12 +53,12 @@
     <select id="getAddress" parameterType="string" resultMap="OrderAddressResultMap">
         SELECT
         toa.u_id,
-        toa.link_name,
-        toa.link_tel,
-        toa.link_province,
-        toa.link_city,
-        toa.link_area,
-        toa.link_address
+        COALESCE (toa.link_name, '') link_name,
+        COALESCE (toa.link_tel, '')link_tel,
+        COALESCE (toa.link_province, '')link_province,
+        COALESCE (toa.link_city, '')link_city,
+        COALESCE (toa.link_area, '')link_area,
+        COALESCE (toa.link_address, '')link_address
         FROM
         t_order_address toa
         WHERE toa.user_id=#{userId}
@@ -66,12 +66,12 @@
     <select id="getDefaultAddress" parameterType="string" resultMap="OrderAddressResultMap">
         SELECT
         toa.u_id,
-        toa.link_name,
-        toa.link_tel,
-        toa.link_province,
-        toa.link_city,
-        toa.link_area,
-        toa.link_address
+        COALESCE (toa.link_name, '') link_name,
+        COALESCE (toa.link_tel, '')link_tel,
+        COALESCE (toa.link_province, '')link_province,
+        COALESCE (toa.link_city, '')link_city,
+        COALESCE (toa.link_area, '')link_area,
+        COALESCE (toa.link_address, '')link_address
         FROM
         t_order_address toa
         WHERE
@@ -86,12 +86,12 @@
     <select id="getAddressPager" resultMap="OrderAddressResultMap">
         SELECT
         toa.u_id,
-        toa.link_name,
-        toa.link_tel,
-        toa.link_province,
-        toa.link_city,
-        toa.link_area,
-        toa.link_address
+        COALESCE (toa.link_name, '') link_name,
+        COALESCE (toa.link_tel, '')link_tel,
+        COALESCE (toa.link_province, '')link_province,
+        COALESCE (toa.link_city, '')link_city,
+        COALESCE (toa.link_area, '')link_area,
+        COALESCE (toa.link_address, '')link_address
         FROM
         t_order_address toa
         WHERE toa.user_id=#{0}
