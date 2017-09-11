@@ -154,22 +154,19 @@ public class GoodsOrderApiController extends GenericController<GoodsOrder, Strin
     @Authorize(action = "C")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseMessage add(@RequestBody Map<String, Object> params) {
-        DecimalFormat df = new DecimalFormat("######0.00");
-        String userId = WebUtil.getLoginUser().getId();
-        String GoodsId = String.valueOf(params.get("goodsId"));
-        String acount = String.valueOf(params.get("acount"));
-        GoodsInfo goodsInfo = goodsInfoService.selectByPk(GoodsId);
-        if (goodsInfo != null) {
-            String totalPrice = df.format(goodsInfo.getPrice() * Double.parseDouble(acount));
-            params.put("totalPrice", totalPrice);
-            String orderId = getService().insert(params);
-                if (orderId.equals("404"))
-                    return ResponseMessage.error("data not found");
-                if (orderId.equals("500"))
-                    return ResponseMessage.error("商品库存不足");
-            return ResponseMessage.created(orderId);
+        String orderId = getService().insert(params);
+        switch (orderId) {
+            case "GoodsInfoNull":
+                return ResponseMessage.error("商品信息未找到");
+            case "orderAddressNull":
+                return ResponseMessage.error("地址信息未找到");
+            case "GoodsInfoSpecNull":
+                return ResponseMessage.error("规格信息未找到");
+            case "500":
+                return ResponseMessage.error("商品库存不足");
+            default:
+                return ResponseMessage.created(orderId);
         }
-        return ResponseMessage.error("goods not found");
     }
 
 

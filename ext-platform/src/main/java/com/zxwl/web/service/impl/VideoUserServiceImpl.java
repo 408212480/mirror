@@ -85,7 +85,7 @@ public class VideoUserServiceImpl extends AbstractServiceImpl<VideoUser, String>
                         map.put("usermd5", resourcesService.selectSingleImage(WebUtil.getBasePath(req), String.valueOf(map.get("usermd5")).trim()));
                     }
                     else {
-                        map.put("usermd5", ResourceUtil.getUserDefaultUserImg(req,(Integer) map.get("sex")));
+                        map.put("usermd5", ResourceUtil.getUserDefaultUserImg(req, map.get("sex")==null? 0 : (Integer)map.get("sex")));
                     }
                 }
             }
@@ -116,7 +116,7 @@ public class VideoUserServiceImpl extends AbstractServiceImpl<VideoUser, String>
                     if (map.get("userimgurl") != null) {
                         map.put("userimgurl", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("userimgurl")).trim()));
                     }else {
-                        map.put("userimgurl", ResourceUtil.getUserDefaultUserImg(req,(Integer) map.get("sex")));
+                        map.put("userimgurl", ResourceUtil.getUserDefaultUserImg(req,map.get("sex")==null? 0 : (Integer)map.get("sex")));
                     }
                     if (!StringUtils.isEmpty(String.valueOf(map.get("videourl")))) {
                         map.put("videourl", ResourceUtil.resourceBuildPath(req, String.valueOf(map.get("videourl")).trim(), type));
@@ -174,7 +174,7 @@ public class VideoUserServiceImpl extends AbstractServiceImpl<VideoUser, String>
                         map.put("usermd5", resourcesService.selectSingleImage(WebUtil.getBasePath(req), String.valueOf(map.get("usermd5")).trim()));
                     }
                     else {
-                        map.put("usermd5", ResourceUtil.getUserDefaultUserImg(req,(Integer) map.get("sex")));
+                        map.put("usermd5", ResourceUtil.getUserDefaultUserImg(req,map.get("sex")==null? 0 : (Integer)map.get("sex")));
                     }
                     String videoimgs = (String) map.get("videoimglist");
                     if (!StringUtils.isEmpty(videoimgs)) {
@@ -225,7 +225,7 @@ public class VideoUserServiceImpl extends AbstractServiceImpl<VideoUser, String>
                         map.put("usermd5", resourcesService.selectSingleImage(WebUtil.getBasePath(req), String.valueOf(map.get("usermd5")).trim()));
                     }
                     else {
-                        map.put("usermd5", ResourceUtil.getUserDefaultUserImg(req,(Integer) map.get("sex")));
+                        map.put("usermd5", ResourceUtil.getUserDefaultUserImg(req,map.get("sex")==null? 0 : (Integer)map.get("sex")));
                     }
                 }
             }

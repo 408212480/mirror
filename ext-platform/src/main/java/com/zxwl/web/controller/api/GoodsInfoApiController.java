@@ -87,7 +87,7 @@ public class GoodsInfoApiController extends GenericController<UserAccount, Strin
             String basePath = WebUtil.getBasePath(req);
             goodsImgs = resourcesService.selectImages(basePath, goodsRecodId);
         }
-        goodsInfoPage.setMapGoodsImgList(goodsImgs);
+        goodsInfoPage.setMapGoodsImgList(goodsImgs  == null ? Lists.newArrayList() : goodsImgs);
         //获取商品信息
         GoodsInfo goodsInfo = goodsInfoService.selectByPk(goodsId);
         if (goodsInfo!=null &&!StringUtils.isEmpty(goodsInfo.getImgId())) {

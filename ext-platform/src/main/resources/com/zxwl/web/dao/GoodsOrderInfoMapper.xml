@@ -115,6 +115,7 @@
         t_goods_order_info.acount,
         t_goods_order_info.goods_id,
         t_goods_order_info.order_id,
+        t_goods_order_info.price,
         t_goods_info_spec.color,
         t_goods_info_spec.size,
         t_shop.shop_name
@@ -144,6 +145,7 @@
         t_goods_order_info.acount,
         t_goods_order_info.goods_id,
         t_goods_order_info.order_id,
+        t_goods_order_info.price,
         t_goods_info_spec.color,
         t_goods_info_spec.size,
         t_shop.shop_name
@@ -173,6 +175,7 @@
         t_goods_order_info.acount,
         t_goods_order_info.goods_id,
         t_goods_order_info.order_id,
+        t_goods_order_info.price,
         t_goods_order_info.link_name,
         t_goods_order_info.link_tel,
         t_goods_order_info.link_address,
