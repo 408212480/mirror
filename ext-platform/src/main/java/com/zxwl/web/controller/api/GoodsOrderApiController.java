@@ -164,6 +164,8 @@ public class GoodsOrderApiController extends GenericController<GoodsOrder, Strin
                 return ResponseMessage.error("规格信息未找到");
             case "500":
                 return ResponseMessage.error("商品库存不足");
+            case "ShopIdNull":
+                return ResponseMessage.error("店铺不能为空");
             default:
                 return ResponseMessage.created(orderId);
         }

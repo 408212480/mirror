@@ -1,5 +1,6 @@
 package com.zxwl.web.service.impl;
 
+import com.zxwl.pay.common.util.str.StringUtils;
 import com.zxwl.web.bean.*;
 import com.zxwl.web.bean.common.InsertParam;
 import com.zxwl.web.bean.common.QueryParam;
@@ -84,6 +85,8 @@ public class GoodsOrderServiceImpl extends AbstractServiceImpl<GoodsOrder, Strin
             return "orderAddressNull";
         if(goodsInfoSpec==null)
             return "GoodsInfoSpecNull";
+        if(StringUtils.isBlank(shopId))
+            return "ShopIdNull";
         if (goodsInfoSpec.getQuality()-Integer.parseInt(acount)<0)
             return "500";
 //        计算订单总价
